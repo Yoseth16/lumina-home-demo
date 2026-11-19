@@ -1,0 +1,58 @@
+---
+/**
+ * Lista de beneficios en semántica de lista: cada ítem con título y texto.
+ */
+interface Feature {
+  title: string;
+  text: string;
+}
+
+interface Props {
+  items: Feature[];
+}
+
+const { items } = Astro.props;
+---
+
+<ul class="feature-list">
+  {
+    items.map((feature) => (
+      <li class="feature-item">
+        <h3 class="feature-title">{feature.title}</h3>
+        <p class="feature-text">{feature.text}</p>
+      </li>
+    ))
+  }
+</ul>
+
+<style>
+  .feature-list {
+    display: grid;
+    gap: var(--space-4);
+    padding: 0;
+    list-style: none;
+  }
+
+  .feature-item {
+    display: grid;
+    gap: var(--space-1);
+    padding: var(--space-4);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    background: var(--color-cream);
+  }
+
+  .feature-title {
+    color: var(--color-navy-800);
+  }
+
+  .feature-text {
+    color: var(--color-muted);
+  }
+
+  @media (min-width: 900px) {
+    .feature-list {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+</style>

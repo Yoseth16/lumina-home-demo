@@ -1,58 +1,285 @@
 ---
 import BaseLayout from '../layouts/BaseLayout.astro';
-import SectionHeading from '../components/SectionHeading.astro';
 import Button from '../components/Button.astro';
+import CategoryCard from '../components/CategoryCard.astro';
+import FeatureList from '../components/FeatureList.astro';
+import MediaSlot from '../components/MediaSlot.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import WhatsAppButton from '../components/WhatsAppButton.astro';
+import { categories } from '../data/catalog';
+
+const benefits = [
+  {
+    title: 'Privacidad',
+    text: 'Productos pensados para conservar la privacidad de tus espacios.',
+  },
+  {
+    title: 'Control de luz y protección solar',
+    text: 'Soluciones para graduar la entrada de luz y controlar el sol.',
+  },
+  {
+    title: 'Diseño y decoración',
+    text: 'Diseños y texturas que combinan con tu hogar.',
+  },
+  {
+    title: 'Cotización ágil por WhatsApp',
+    text: 'Cuéntanos qué necesitas y solicita tu cotización por WhatsApp.',
+  },
+];
 ---
+
 <BaseLayout
   title="Lumina Home — El arte de transformar tus espacios"
   description="Disfruta de tus espacios con la iluminación que deseas y un diseño que combina con tu hogar."
 >
-  <section class="hero">
-    <div class="container">
-      <h1>El arte de transformar tus espacios</h1>
+  <section class="hero" id="inicio" aria-labelledby="hero-title">
+    <div class="hero-media" aria-hidden="true">
+      <MediaSlot
+        id="obra-enrollable-doble-altura"
+        widths={[640, 960, 1280, 1600]}
+        sizes="100vw"
+        loading="eager"
+        fetchpriority="high"
+      />
+    </div>
+    <div class="hero-overlay" aria-hidden="true"></div>
+    <div class="container hero-content">
+      <h1 id="hero-title">El arte de transformar tus espacios</h1>
       <p class="hero-lead">
-        Disfruta de tus espacios con la iluminación que deseas y un diseño que combina con tu
-        hogar.
+        Disfruta de tus espacios con la iluminación que deseas y un diseño que combina con tu hogar.
       </p>
       <div class="hero-actions">
         <Button variant="primary" href="/catalogo/">Ver catálogo</Button>
+        <WhatsAppButton />
       </div>
     </div>
   </section>
-  <section class="home-note container" data-reveal>
-    <SectionHeading
-      eyebrow="Demostración"
-      title="Secciones en preparación"
-      lead="El catálogo y la página de contacto de esta demostración se están construyendo."
-    />
+
+  <section class="home-section" id="presentacion" data-reveal>
+    <div class="container">
+      <SectionHeading eyebrow="Lumina Home · Cali, Colombia" title="Lumina Home" />
+      <p class="presentacion-lead">
+        Polarizados, papel tapiz y persianas y cortinas para tus espacios en Cali, Colombia.
+      </p>
+      <div class="presentacion-media">
+        <MediaSlot
+          id="brand-mockup"
+          widths={[480, 800, 1200]}
+          sizes="(min-width: 900px) 55vw, 100vw"
+        />
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section" id="categorias" data-reveal>
+    <div class="container">
+      <SectionHeading title="Conoce lo que podemos hacer por tu hogar" />
+      <div class="category-grid">
+        {categories.map((category) => <CategoryCard category={category} />)}
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section" id="galeria" data-reveal>
+    <div class="container">
+      <SectionHeading
+        title="Galería"
+        lead="Fotografías de trabajos de Lumina Home. Las imágenes provisionales se reemplazarán por trabajos reales."
+      />
+      <div class="gallery-track" tabindex="0" aria-label="Galería de trabajos">
+        <div class="gallery-item">
+          <MediaSlot
+            id="obra-enrollable-doble-altura"
+            widths={[480, 800, 1200]}
+            sizes="(min-width: 900px) 33vw, 82vw"
+          />
+        </div>
+        {
+          Array.from({ length: 5 }).map(() => (
+            <div class="gallery-item">
+              <MediaSlot />
+            </div>
+          ))
+        }
+      </div>
+    </div>
+  </section>
+
+  <section class="home-section" id="beneficios" data-reveal>
+    <div class="container">
+      <SectionHeading title="Lo que encuentras en Lumina Home" />
+      <FeatureList items={benefits} />
+    </div>
+  </section>
+
+  <section class="cotizar" id="cotizar" data-reveal>
+    <div class="container">
+      <SectionHeading title="Solicita tu cotización" lead="Cuéntanos qué espacio quieres transformar." />
+      <div class="cotizar-actions">
+        <WhatsAppButton variant="primary" />
+      </div>
+    </div>
   </section>
 </BaseLayout>
 
 <style>
+  /* Hero: foto de obra a sangre completa bajo un velo azul marino */
   .hero {
-    padding-block: var(--space-9);
-    text-align: center;
+    position: relative;
+  }
+
+  .hero-media {
+    position: absolute;
+    inset: 0;
+    overflow: hidden;
+  }
+
+  .hero-media :global(img),
+  .hero-media :global(.media-placeholder) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    aspect-ratio: auto;
+  }
+
+  .hero-overlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(
+      180deg,
+      color-mix(in srgb, var(--color-navy-900) 86%, transparent),
+      color-mix(in srgb, var(--color-navy-900) 62%, transparent) 55%,
+      color-mix(in srgb, var(--color-navy-900) 88%, transparent)
+    );
+  }
+
+  .hero-content {
+    position: relative;
+    padding-block: var(--space-8);
+    color: var(--color-ivory);
+  }
+
+  .hero-content :global(a:focus-visible) {
+    outline-color: var(--color-ivory);
   }
 
   .hero h1 {
-    margin-inline: auto;
     max-width: 20ch;
     font-size: var(--fs-5);
-    color: var(--color-navy-800);
+    color: var(--color-ivory);
   }
 
   .hero-lead {
-    margin: var(--space-5) auto 0;
-    max-width: 52ch;
+    max-width: 46ch;
+    margin-top: var(--space-4);
     font-size: var(--fs-1);
-    color: var(--color-muted);
+    color: var(--color-cream);
   }
 
   .hero-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
     margin-top: var(--space-6);
   }
 
-  .home-note {
-    padding-block: var(--space-7) var(--space-9);
+  /* Secciones intermedias */
+  .home-section {
+    padding-block: var(--space-7) var(--space-8);
+  }
+
+  /* Presentación: la imagen de marca se muestra sin recorte */
+  .presentacion-lead {
+    max-width: 60ch;
+    margin-top: calc(-1 * var(--space-3));
+    color: var(--color-muted);
+  }
+
+  .presentacion-media {
+    max-width: 720px;
+    margin-top: var(--space-5);
+    padding: var(--space-4);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    background: var(--color-cream);
+  }
+
+  .presentacion-media :global(img) {
+    width: 100%;
+    height: auto;
+    object-fit: contain;
+  }
+
+  /* Categorías: una columna en móvil, tres a partir de 900 px */
+  .category-grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 900px) {
+    .category-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* Galería: fila de desplazamiento horizontal en móvil, rejilla en escritorio */
+  .gallery-track {
+    display: flex;
+    gap: var(--space-3);
+    overflow-x: auto;
+    scroll-snap-type: x mandatory;
+    padding-block: var(--space-2);
+  }
+
+  .gallery-item {
+    flex: 0 0 min(82vw, 360px);
+    scroll-snap-align: start;
+  }
+
+  .gallery-item :global(img),
+  .gallery-item :global(.media-placeholder) {
+    width: 100%;
+    height: 100%;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+  }
+
+  .gallery-item :global(img) {
+    aspect-ratio: 4 / 3;
+  }
+
+  @media (min-width: 900px) {
+    .gallery-track {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      overflow-x: visible;
+    }
+
+    .gallery-item {
+      flex: none;
+    }
+  }
+
+  /* Cotizar: banda azul marino */
+  .cotizar {
+    padding-block: var(--space-8);
+    background: var(--color-navy-900);
+    color: var(--color-ivory);
+  }
+
+  .cotizar :global(.section-heading .title) {
+    color: var(--color-ivory);
+  }
+
+  .cotizar :global(.section-heading .lead) {
+    color: var(--color-cream);
+  }
+
+  .cotizar :global(a:focus-visible) {
+    outline-color: var(--color-ivory);
+  }
+
+  .cotizar-actions {
+    margin-top: var(--space-5);
   }
 </style>

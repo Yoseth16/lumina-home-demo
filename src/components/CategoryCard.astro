@@ -1,0 +1,53 @@
+---
+import type { Category } from '../data/schema';
+
+/**
+ * Tarjeta de categoría del catálogo: nombre, etiqueta y enlace a la
+ * sección correspondiente. Sin descripciones inventadas ni imágenes.
+ */
+interface Props {
+  category: Category;
+  reveal?: boolean;
+}
+
+const { category, reveal = false } = Astro.props;
+---
+
+<article class="category-card" data-reveal={reveal ? '' : undefined}>
+  <h3 class="category-name">{category.name}</h3>
+  <p class="category-tagline">{category.tagline}</p>
+  <a class="category-link" href={`/catalogo/${category.slug}/`}>Ver {category.name}</a>
+</article>
+
+<style>
+  .category-card {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    padding: var(--space-5) var(--space-4);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    background: var(--color-cream);
+  }
+
+  .category-name {
+    color: var(--color-navy-800);
+  }
+
+  .category-tagline {
+    color: var(--color-muted);
+  }
+
+  .category-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    align-self: start;
+    font-weight: 600;
+    text-decoration: none;
+  }
+
+  .category-link:hover {
+    text-decoration: underline;
+  }
+</style>

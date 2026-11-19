@@ -1,0 +1,119 @@
+---
+import { Image } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { canRender, mediaRegistry } from '../data/media';
+
+/**
+ * Ranura de medios: renderiza la imagen optimizada del registro cuando la
+ * entrada existe, es una imagen y está autorizada para la demo local; en
+ * cualquier otro caso muestra un bloque de marca "Imagen provisional".
+ * Un id desconocido o una entrada de video interrumpe el build.
+ */
+interface Props {
+  id?: string;
+  sizes?: string;
+  widths?: number[];
+  loading?: 'lazy' | 'eager';
+  fetchpriority?: 'high' | 'auto';
+  class?: string;
+  label?: string;
+}
+
+const {
+  id,
+  sizes,
+  widths,
+  loading = 'lazy',
+  fetchpriority = 'auto',
+  class: className,
+  label,
+} = Astro.props;
+
+const placeholderClass =
+  className === undefined ? 'media-placeholder' : `media-placeholder ${className}`;
+
+/** Imágenes del proyecto indexadas por la ruta `file` del registro (prefijo `/`). */
+const imageSources = import.meta.glob('/src/assets/**/*.{jpeg,jpg,png}', {
+  eager: true,
+  import: 'default',
+}) as Record<string, ImageMetadata>;
+
+let source: ImageMetadata | undefined;
+let alt: string | undefined;
+
+if (id !== undefined) {
+  const entry = mediaRegistry.find((candidate) => candidate.id === id);
+
+  if (entry === undefined) {
+    throw new Error(`MediaSlot: id de medio no registrado: "${id}".`);
+  }
+  if (entry.kind === 'video') {
+    throw new Error(
+      `MediaSlot: el medio "${id}" es un video y esta página estática solo renderiza imágenes.`,
+    );
+  }
+
+  alt = entry.alt;
+  if (canRender(entry, { publicDeploy: false }) === 'asset' && entry.file !== undefined) {
+    source = imageSources[`/${entry.file}`];
+  }
+}
+---
+
+{
+  source !== undefined && alt !== undefined ? (
+    <Image
+      class={className}
+      src={source}
+      alt={alt}
+      widths={widths}
+      sizes={sizes}
+      loading={loading}
+      fetchpriority={fetchpriority}
+    />
+  ) : (
+    <div class={placeholderClass} role="img" aria-label="Imagen provisional">
+      <p class="placeholder-mark" aria-hidden="true">LH</p>
+      <p class="placeholder-title">Imagen provisional</p>
+      {label !== undefined && <p class="placeholder-label">{label}</p>}
+    </div>
+  )
+}
+
+<style>
+  .media-placeholder {
+    display: grid;
+    place-content: center;
+    gap: var(--space-2);
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 4 / 3;
+    padding: var(--space-4);
+    border: 1px solid var(--color-beige);
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, var(--color-navy-900), var(--color-navy-800));
+    color: var(--color-ivory);
+    text-align: center;
+  }
+
+  .placeholder-mark {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--fs-3);
+    line-height: 1;
+    color: var(--color-beige);
+  }
+
+  .placeholder-title {
+    margin: 0;
+    font-size: var(--fs-0);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+
+  .placeholder-label {
+    margin: 0;
+    font-size: var(--fs-0);
+    color: var(--color-cream);
+  }
+</style>

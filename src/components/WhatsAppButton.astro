@@ -1,0 +1,28 @@
+---
+import Button from './Button.astro';
+import { site } from '../data/site';
+import { buildWhatsAppUrl, quoteMessage } from '../lib/whatsapp';
+
+/**
+ * Botón de cotización por WhatsApp: el número nunca vive en el código,
+ * llega desde `site.whatsappNumber` a través de los helpers.
+ */
+interface Props {
+  label?: string;
+  variant?: 'primary' | 'secondary' | 'ghost';
+  item?: string;
+  category?: string;
+}
+
+const { label = 'Cotizar por WhatsApp', variant = 'primary', item, category } = Astro.props;
+
+const href = buildWhatsAppUrl({
+  number: site.whatsappNumber,
+  message: quoteMessage({
+    item: item !== undefined ? { name: item } : null,
+    category: category !== undefined ? { name: category } : null,
+  }),
+});
+---
+
+<Button variant={variant} href={href} external>{label}</Button>
