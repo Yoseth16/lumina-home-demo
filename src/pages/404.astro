@@ -1,0 +1,50 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import Button from '../components/Button.astro';
+import Logo from '../components/Logo.astro';
+
+/**
+ * Página 404: lockup de marca, mensaje breve y dos rutas de salida
+ * (inicio y catálogo). Botones sobre fondo claro.
+ */
+---
+
+<BaseLayout title="Página no encontrada — Lumina Home" description="La página que buscas no existe.">
+  <section class="not-found">
+    <div class="container not-found-content">
+      <Logo variant="lockup" />
+      <h1 class="not-found-title">Página no encontrada</h1>
+      <p class="not-found-lead">La página que buscas no existe o cambió de lugar.</p>
+      <div class="not-found-actions">
+        <Button href="/" variant="primary">Volver al inicio</Button>
+        <Button href="/catalogo/" variant="secondary">Ver el catálogo</Button>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .not-found {
+    padding-block: var(--space-8) var(--space-9);
+  }
+
+  .not-found-content {
+    display: grid;
+    justify-items: center;
+    gap: var(--space-4);
+    text-align: center;
+  }
+
+  .not-found-lead {
+    max-width: 46ch;
+    color: var(--color-muted);
+  }
+
+  .not-found-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    justify-content: center;
+    margin-top: var(--space-2);
+  }
+</style>

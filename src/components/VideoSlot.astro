@@ -1,0 +1,122 @@
+---
+import { canRender, mediaRegistry } from '../data/media';
+
+/**
+ * Ranura de vídeo: renderiza el vídeo del registro cuando la entrada
+ * existe, es un vídeo y está autorizada para la demo local; en cualquier
+ * otro caso muestra un bloque de marca "Vídeo provisional". Un id
+ * desconocido o una entrada de imagen interrumpe el build.
+ *
+ * Sin autoplay: controles nativos, silenciado, `playsinline`, póster y
+ * carga diferida (`preload="none"`). Los vídeos son verticales (≈ 9:16):
+ * el reproductor se limita por altura de viewport, sin dimensiones
+ * fijas por archivo.
+ */
+interface Props {
+  id: string;
+  class?: string;
+}
+
+const { id, class: className } = Astro.props;
+
+const entry = mediaRegistry.find((candidate) => candidate.id === id);
+
+if (entry === undefined) {
+  throw new Error(`VideoSlot: id de medio no registrado: "${id}".`);
+}
+if (entry.kind !== 'video') {
+  throw new Error(`VideoSlot: el medio "${id}" no es un vídeo.`);
+}
+
+const placeholderClass =
+  className === undefined ? 'video-placeholder' : `video-placeholder ${className}`;
+
+/** URL pública derivada de la ruta `public/...` del registro (prefijo `/`). */
+function toPublicUrl(path: string): string {
+  return path.replace(/^public/, '');
+}
+
+const videoSrc = entry.file !== undefined ? toPublicUrl(entry.file) : null;
+const posterSrc = entry.poster !== undefined ? toPublicUrl(entry.poster) : null;
+
+const renderAsset =
+  canRender(entry, { publicDeploy: false }) === 'asset' && videoSrc !== null && posterSrc !== null;
+
+const figureClass = className === undefined ? 'video-slot' : `video-slot ${className}`;
+---
+
+{
+  renderAsset && videoSrc !== null && posterSrc !== null ? (
+    <figure class={figureClass}>
+      <video controls muted playsinline preload="none" poster={posterSrc}>
+        <source src={videoSrc} type="video/mp4" />
+        Tu navegador no puede reproducir este vídeo. Escríbenos por WhatsApp para ver el detalle.
+      </video>
+      <figcaption>{entry.alt}</figcaption>
+    </figure>
+  ) : (
+    <div class={placeholderClass} role="img" aria-label="Vídeo provisional">
+      <p class="placeholder-mark" aria-hidden="true">LH</p>
+      <p class="placeholder-title">Vídeo provisional</p>
+    </div>
+  )
+}
+
+<style>
+  .video-slot {
+    display: grid;
+    gap: var(--space-2);
+    justify-items: center;
+  }
+
+  .video-slot video {
+    width: auto;
+    height: auto;
+    aspect-ratio: 9 / 16;
+    max-width: 100%;
+    max-height: min(80vh, 640px);
+    object-fit: contain;
+    border-radius: var(--radius-md);
+    background: var(--color-navy-900);
+  }
+
+  .video-slot figcaption {
+    max-width: 46ch;
+    font-size: var(--fs-0);
+    color: var(--color-muted);
+    text-align: center;
+  }
+
+  /* Marcador de posición con la misma proporción vertical */
+  .video-placeholder {
+    display: grid;
+    place-content: center;
+    gap: var(--space-2);
+    width: 100%;
+    height: 100%;
+    aspect-ratio: 9 / 16;
+    max-height: min(80vh, 640px);
+    margin-inline: auto;
+    padding: var(--space-4);
+    border: 1px solid var(--color-beige);
+    border-radius: var(--radius-md);
+    background: linear-gradient(135deg, var(--color-navy-900), var(--color-navy-800));
+    color: var(--color-ivory);
+    text-align: center;
+  }
+
+  .placeholder-mark {
+    margin: 0;
+    font-family: var(--font-display);
+    font-size: var(--fs-3);
+    line-height: 1;
+    color: var(--color-beige);
+  }
+
+  .placeholder-title {
+    margin: 0;
+    font-size: var(--fs-0);
+    font-weight: 600;
+    letter-spacing: 0.04em;
+  }
+</style>

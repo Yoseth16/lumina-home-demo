@@ -1,0 +1,213 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import MediaSlot from '../../../components/MediaSlot.astro';
+import VideoSlot from '../../../components/VideoSlot.astro';
+import WhatsAppButton from '../../../components/WhatsAppButton.astro';
+import { fichaItems } from '../../../data/catalog';
+import { mediaRegistry } from '../../../data/media';
+import type { Category, Item } from '../../../data/schema';
+
+/**
+ * Ficha de producto: una página por cada ítem `ficha` del catálogo.
+ * El contenido (nombre, descripción confirmada, características y
+ * medios) proviene SIEMPRE de `catalog.ts` y `media.ts`; nada se
+ * escribe fijo aquí. Las imágenes se renderizan con `MediaSlot` y los
+ * vídeos con `VideoSlot`, en el orden de `item.media`.
+ */
+export function getStaticPaths() {
+  return fichaItems().map(({ category, item }) => ({
+    params: { categoria: category.slug, producto: item.slug },
+    props: { category, item },
+  }));
+}
+
+interface Props {
+  category: Category;
+  item: Item;
+}
+
+const { category, item } = Astro.props;
+
+if (item.description === undefined) {
+  throw new Error(
+    `[producto] el ítem de ficha "${item.slug}" no tiene descripción confirmada en el catálogo.`,
+  );
+}
+
+const description = item.description;
+const features = item.features ?? [];
+const mediaIds = item.media ?? [];
+const kindById = new Map(mediaRegistry.map((entry) => [entry.id, entry.kind]));
+
+const crumbs = [
+  { label: 'Inicio', href: '/' },
+  { label: 'Catálogo', href: '/catalogo/' },
+  { label: category.name, href: `/catalogo/${category.slug}/` },
+  { label: item.name },
+];
+---
+
+<BaseLayout title={`${item.name} — Lumina Home`} description={description}>
+  <section class="product-hero">
+    <div class="container">
+      <Breadcrumbs items={crumbs} />
+      <h1 class="product-title">{item.name}</h1>
+      <p class="product-lead">{description}</p>
+    </div>
+  </section>
+
+  {
+    features.length > 0 && (
+      <section class="product-features" data-reveal>
+        <div class="container">
+          <h2 class="features-title">Características</h2>
+          <ul class="features-list">
+            {features.map((feature) => (
+              <li class="features-item">{feature}</li>
+            ))}
+          </ul>
+        </div>
+      </section>
+    )
+  }
+
+  {
+    mediaIds.length > 0 && (
+      <section class="product-gallery" data-reveal>
+        <div class="container">
+          <h2 class="gallery-title">Galería</h2>
+          <div class="gallery-grid">
+            {mediaIds.map((id) =>
+              kindById.get(id) === 'video' ? (
+                <VideoSlot id={id} />
+              ) : (
+                <MediaSlot
+                  id={id}
+                  widths={[480, 800, 1200]}
+                  sizes="(min-width: 900px) 50vw, 100vw"
+                />
+              ),
+            )}
+          </div>
+        </div>
+      </section>
+    )
+  }
+
+  <section class="product-quote" data-reveal>
+    <div class="container">
+      <div class="quote-actions">
+        <WhatsAppButton
+          item={item.name}
+          category={category.name}
+          label={`Cotizar ${item.name} por WhatsApp`}
+        />
+        <a class="back-link" href={`/catalogo/${category.slug}/`}>
+          Volver a {category.name}
+        </a>
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Banda de producto: azul marino con texto marfil, sin CTAs */
+  .product-hero {
+    padding-block: var(--space-5) var(--space-7);
+    background: var(--color-navy-900);
+    color: var(--color-ivory);
+  }
+
+  .product-hero :global(a:focus-visible) {
+    outline-color: var(--color-ivory);
+  }
+
+  .product-title {
+    margin-block: var(--space-3) var(--space-2);
+    color: var(--color-ivory);
+  }
+
+  .product-lead {
+    max-width: 60ch;
+    color: var(--color-cream);
+  }
+
+  /* Características: lista simple sobre fondo claro */
+  .product-features {
+    padding-block: var(--space-6);
+  }
+
+  .features-title {
+    margin-bottom: var(--space-4);
+  }
+
+  .features-list {
+    display: grid;
+    gap: var(--space-3);
+    padding: 0;
+    margin: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 900px) {
+    .features-list {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  .features-item {
+    padding: var(--space-3) var(--space-4);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    background: var(--color-cream);
+    color: var(--color-navy-800);
+    font-weight: 600;
+  }
+
+  /* Galería: apilada en móvil, dos columnas en escritorio */
+  .product-gallery {
+    padding-block: var(--space-6);
+  }
+
+  .gallery-title {
+    margin-bottom: var(--space-4);
+  }
+
+  .gallery-grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 900px) {
+    .gallery-grid {
+      grid-template-columns: repeat(2, 1fr);
+      align-items: start;
+    }
+  }
+
+  /* Cotización sobre fondo claro: el botón primario nunca va sobre azul */
+  .product-quote {
+    padding-block: var(--space-6) var(--space-8);
+  }
+
+  .quote-actions {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3);
+    align-items: center;
+  }
+
+  .back-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-weight: 600;
+    color: var(--color-navy-800);
+    text-decoration: none;
+  }
+
+  .back-link:hover {
+    text-decoration: underline;
+  }
+</style>
