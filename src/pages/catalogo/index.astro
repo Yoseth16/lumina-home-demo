@@ -1,0 +1,51 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../components/Breadcrumbs.astro';
+import CategoryCard from '../../components/CategoryCard.astro';
+import { categories } from '../../data/catalog';
+---
+
+<BaseLayout
+  title="Catálogo — Lumina Home"
+  description="Categorías de Lumina Home: polarizados, papel tapiz / tapizados y persianas y cortinas."
+>
+  <section class="catalogo-section" data-reveal>
+    <div class="container">
+      <Breadcrumbs items={[{ label: 'Inicio', href: '/' }, { label: 'Catálogo' }]} />
+      <h1 class="catalogo-title">Catálogo</h1>
+      <p class="catalogo-lead">Elige una categoría para ver los productos.</p>
+      <div class="category-grid">
+        {categories.map((category) => <CategoryCard category={category} />)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  .catalogo-section {
+    padding-block: var(--space-6) var(--space-8);
+  }
+
+  .catalogo-title {
+    margin-block: var(--space-3) var(--space-2);
+    color: var(--color-navy-800);
+  }
+
+  .catalogo-lead {
+    max-width: 46ch;
+    color: var(--color-muted);
+  }
+
+  /* Categorías: una columna en móvil, tres a partir de 900 px */
+  .category-grid {
+    display: grid;
+    gap: var(--space-4);
+    margin-top: var(--space-6);
+  }
+
+  @media (min-width: 900px) {
+    .category-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>

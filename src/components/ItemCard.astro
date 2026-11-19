@@ -1,0 +1,91 @@
+---
+import type { Category, Item } from '../data/schema';
+import WhatsAppButton from './WhatsAppButton.astro';
+
+/**
+ * Tarjeta de producto del catálogo. Los ítems `ficha` enlazan a su página
+ * de producto (se construye en T6); los `pendiente` muestran el aviso de
+ * ficha en preparación y un botón de cotización. Sin imágenes ni texto
+ * inventado: el contenido siempre proviene de `catalog.ts`.
+ */
+interface Props {
+  category: Category;
+  item: Item;
+}
+
+const { category, item } = Astro.props;
+
+const isFicha = item.status === 'ficha';
+const productHref = `/catalogo/${category.slug}/${item.slug}/`;
+---
+
+<article class="item-card">
+  <h3 class="item-name">{item.name}</h3>
+  {
+    isFicha ? (
+      <>
+        {item.summary !== undefined && <p class="item-summary">{item.summary}</p>}
+        <a class="item-link" href={productHref}>
+          Ver ficha de {item.name}
+        </a>
+      </>
+    ) : (
+      <>
+        <p class="item-badge">Ficha en preparación</p>
+        <div class="item-action">
+          <WhatsAppButton label="Cotizar" item={item.name} category={category.name} />
+        </div>
+      </>
+    )
+  }
+</article>
+
+<style>
+  .item-card {
+    display: grid;
+    gap: var(--space-3);
+    align-content: start;
+    padding: var(--space-5) var(--space-4);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-md);
+    background: var(--color-cream);
+  }
+
+  .item-name {
+    color: var(--color-navy-800);
+  }
+
+  .item-summary {
+    color: var(--color-muted);
+  }
+
+  .item-badge {
+    align-self: start;
+    padding: var(--space-1) var(--space-2);
+    border: 1px solid var(--color-line);
+    border-radius: var(--radius-sm);
+    font-size: var(--fs-0);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .item-link {
+    justify-self: start;
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    font-weight: 600;
+    color: var(--color-navy-800);
+    text-decoration: none;
+  }
+
+  .item-link:hover {
+    text-decoration: underline;
+  }
+
+  .item-action {
+    display: flex;
+  }
+</style>

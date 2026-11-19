@@ -1,0 +1,77 @@
+---
+/**
+ * Ruta de navegación (migas de pan). Todos los elementos menos el último
+ * son enlaces; el último marca la página actual con `aria-current="page"`.
+ * El separador visual queda oculto a lectores de pantalla.
+ */
+interface BreadcrumbItem {
+  label: string;
+  href?: string;
+}
+
+interface Props {
+  items: BreadcrumbItem[];
+}
+
+const { items } = Astro.props;
+---
+
+<nav aria-label="Ruta de navegación">
+  <ol class="breadcrumbs">
+    {
+      items.map((item, index) => {
+        const isCurrent = index === items.length - 1;
+        return (
+          <li class="crumb">
+            {isCurrent ? (
+              <span class="crumb-label" aria-current="page">
+                {item.label}
+              </span>
+            ) : (
+              <>
+                <a class="crumb-link" href={item.href}>
+                  {item.label}
+                </a>
+                <span class="crumb-separator" aria-hidden="true">›</span>
+              </>
+            )}
+          </li>
+        );
+      })
+    }
+  </ol>
+</nav>
+
+<style>
+  .breadcrumbs {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-2);
+    padding: 0;
+    list-style: none;
+    font-size: var(--fs-0);
+  }
+
+  .crumb {
+    display: flex;
+    align-items: center;
+    gap: var(--space-2);
+  }
+
+  .crumb-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    text-decoration: none;
+  }
+
+  .crumb-link:hover {
+    text-decoration: underline;
+  }
+
+  /* Decorativo, oculto a lectores de pantalla (aria-hidden) */
+  .crumb-separator {
+    opacity: 0.65;
+  }
+</style>

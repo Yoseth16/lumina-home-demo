@@ -1,0 +1,145 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro';
+import Breadcrumbs from '../../../components/Breadcrumbs.astro';
+import ItemCard from '../../../components/ItemCard.astro';
+import { categories } from '../../../data/catalog';
+import type { Category } from '../../../data/schema';
+
+export function getStaticPaths() {
+  return categories.map((category) => ({
+    params: { categoria: category.slug },
+    props: { category },
+  }));
+}
+
+interface Props {
+  category: Category;
+}
+
+const { category } = Astro.props;
+
+const crumbs = [
+  { label: 'Inicio', href: '/' },
+  { label: 'Catálogo', href: '/catalogo/' },
+  { label: category.name },
+];
+---
+
+<BaseLayout title={`${category.name} — Lumina Home`} description={category.tagline}>
+  <section class="category-hero">
+    <div class="container">
+      <Breadcrumbs items={crumbs} />
+      <h1 class="category-title">{category.name}</h1>
+      <p class="category-lead">{category.tagline}</p>
+    </div>
+  </section>
+
+  <nav class="category-switcher" aria-label="Categorías">
+    <div class="container">
+      <ul class="switcher-list">
+        {
+          categories.map((cat) => (
+            <li>
+              <a
+                class="switcher-link"
+                href={`/catalogo/${cat.slug}/`}
+                aria-current={cat.slug === category.slug ? 'page' : undefined}
+              >
+                {cat.shortName}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </div>
+  </nav>
+
+  <section class="items-section" data-reveal>
+    <div class="container">
+      <div class="items-grid">
+        {category.items.map((item) => <ItemCard category={category} item={item} />)}
+      </div>
+    </div>
+  </section>
+</BaseLayout>
+
+<style>
+  /* Banda de categoría: azul marino con texto marfil, sin CTAs ni imágenes */
+  .category-hero {
+    padding-block: var(--space-5) var(--space-7);
+    background: var(--color-navy-900);
+    color: var(--color-ivory);
+  }
+
+  .category-hero :global(a:focus-visible) {
+    outline-color: var(--color-ivory);
+  }
+
+  .category-title {
+    margin-block: var(--space-3) var(--space-2);
+    color: var(--color-ivory);
+  }
+
+  .category-lead {
+    max-width: 46ch;
+    color: var(--color-cream);
+  }
+
+  /* Conmutador de categorías */
+  .category-switcher {
+    border-bottom: 1px solid var(--color-line);
+    background: var(--color-cream);
+  }
+
+  .switcher-list {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-1);
+    padding-block: var(--space-1);
+    margin: 0;
+    list-style: none;
+  }
+
+  .switcher-link {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding-inline: var(--space-3);
+    border-radius: var(--radius-sm);
+    color: var(--color-muted);
+    text-decoration: none;
+  }
+
+  .switcher-link:hover {
+    text-decoration: underline;
+  }
+
+  .switcher-link[aria-current='page'] {
+    font-weight: 600;
+    color: var(--color-navy-800);
+    background: var(--color-ivory);
+    box-shadow: inset 0 -2px 0 var(--color-navy-800);
+  }
+
+  /* Productos: una columna en móvil, dos a partir de 640 px, tres a partir de 1000 px */
+  .items-section {
+    padding-block: var(--space-6) var(--space-8);
+  }
+
+  .items-grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 640px) {
+    .items-grid {
+      grid-template-columns: repeat(2, 1fr);
+    }
+  }
+
+  @media (min-width: 1000px) {
+    .items-grid {
+      grid-template-columns: repeat(3, 1fr);
+    }
+  }
+</style>
