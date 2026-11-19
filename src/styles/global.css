@@ -1,0 +1,156 @@
+@import './tokens.css';
+
+/* Reset moderno, mobile-first */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  scroll-behavior: smooth;
+}
+
+body {
+  min-height: 100vh;
+  font-family: var(--font-body);
+  font-size: var(--fs-1);
+  line-height: 1.6;
+  background-color: var(--color-ivory);
+  color: var(--color-ink);
+  -webkit-font-smoothing: antialiased;
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+input,
+button,
+textarea,
+select {
+  font: inherit;
+}
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-family: var(--font-display);
+  font-weight: 500;
+  line-height: 1.15;
+  overflow-wrap: break-word;
+  text-wrap: balance;
+}
+
+h1 {
+  font-size: var(--fs-4);
+}
+
+h2 {
+  font-size: var(--fs-3);
+}
+
+h3 {
+  font-size: var(--fs-2);
+}
+
+a {
+  color: inherit;
+}
+
+/* Contenedor central */
+.container {
+  max-width: var(--container);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+/* Accesibilidad: contenido oculto visualmente pero disponible a lectores */
+.visually-hidden {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  margin: -1px;
+  padding: 0;
+  border: 0;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+}
+
+/* Enlace de salto al contenido: fuera de pantalla hasta recibir foco */
+.skip-link {
+  position: fixed;
+  top: 0;
+  left: 0;
+  z-index: 100;
+  padding: var(--space-2) var(--space-4);
+  background: var(--color-navy-900);
+  color: var(--color-ivory);
+  font-weight: 600;
+  text-decoration: none;
+  border-radius: 0 0 var(--radius-sm) 0;
+  transform: translateY(-120%);
+}
+
+.skip-link:focus-visible {
+  transform: none;
+}
+
+/* Foco visible claro en todos los elementos interactivos */
+a:focus-visible,
+button:focus-visible,
+input:focus-visible,
+select:focus-visible,
+textarea:focus-visible,
+summary:focus-visible,
+[tabindex]:focus-visible {
+  outline: 3px solid var(--color-navy-800);
+  outline-offset: 2px;
+}
+
+/* Animación de aparición: visible por defecto; solo `html.js` la activa,
+   de modo que sin JavaScript todo el contenido queda a la vista. */
+.js [data-reveal] {
+  transition:
+    opacity var(--dur) var(--ease),
+    transform var(--dur) var(--ease);
+}
+
+.js [data-reveal]:not(.is-visible) {
+  opacity: 0;
+  transform: translateY(12px);
+}
+
+/* Movimiento reducido: sin animaciones, transiciones ni scroll suave */
+@media (prefers-reduced-motion: reduce) {
+  html {
+    scroll-behavior: auto;
+  }
+
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+
+  .js [data-reveal]:not(.is-visible) {
+    opacity: 1;
+    transform: none;
+  }
+}

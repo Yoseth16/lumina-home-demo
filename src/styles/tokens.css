@@ -1,0 +1,54 @@
+/* Design tokens de Lumina Home (plan §6.1).
+   navy-900 #0B1A2E verificado: contraste WCAG con marfil 16.35:1 y con
+   crema 14.51:1 (>= 4.5). sand-600 sobre marfil 4.06:1: solo texto grande
+   o uso decorativo, nunca texto pequeño. */
+
+:root {
+  /* Color */
+  --color-navy-900: #0B1A2E;
+  --color-navy-800: #14274A;
+  --color-navy-600: #2A4170;
+  --color-ivory: #FAF7F1;
+  --color-cream: #F1E9DC;
+  --color-beige: #D8C6A8;
+  --color-sand-600: #8C7656;
+  --color-ink: #1A1D24;
+  --color-muted: #5B6170;
+  --color-line: rgba(14, 27, 51, 0.12);
+
+  /* Tipografía */
+  --font-display: "Cormorant Garamond", Georgia, serif;
+  --font-body: "Manrope Variable", system-ui, sans-serif;
+
+  /* Radios y sombras */
+  --radius-sm: 4px;
+  --radius-md: 10px;
+  --shadow-soft: 0 10px 30px rgba(14, 27, 51, 0.08);
+
+  /* Espaciado */
+  --space-1: 4px;
+  --space-2: 8px;
+  --space-3: 12px;
+  --space-4: 16px;
+  --space-5: 24px;
+  --space-6: 32px;
+  --space-7: 48px;
+  --space-8: 72px;
+  --space-9: 112px;
+
+  /* Contenedor y rejilla */
+  --container: 1200px;
+  --gutter: clamp(16px, 4vw, 40px);
+
+  /* Movimiento */
+  --ease: cubic-bezier(0.2, 0.7, 0.2, 1);
+  --dur: 600ms;
+
+  /* Escala tipográfica fluida */
+  --fs-0: clamp(0.875rem, 0.845rem + 0.15vw, 1rem);
+  --fs-1: clamp(1rem, 0.955rem + 0.23vw, 1.125rem);
+  --fs-2: clamp(1.25rem, 1.16rem + 0.45vw, 1.5rem);
+  --fs-3: clamp(1.6rem, 1.42rem + 0.9vw, 2.125rem);
+  --fs-4: clamp(2.1rem, 1.7rem + 2vw, 3.25rem);
+  --fs-5: clamp(2.75rem, 2rem + 3.75vw, 5rem);
+}

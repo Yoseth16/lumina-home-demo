@@ -1,0 +1,41 @@
+---
+interface Props {
+  eyebrow?: string;
+  title: string;
+  level?: 2 | 3;
+  lead?: string;
+}
+
+const { eyebrow, title, level = 2, lead } = Astro.props;
+
+const Heading = level === 3 ? 'h3' : 'h2';
+---
+
+<div class="section-heading">
+  {eyebrow && <p class="eyebrow">{eyebrow}</p>}
+  <Heading class="title">{title}</Heading>
+  {lead && <p class="lead">{lead}</p>}
+</div>
+
+<style>
+  .section-heading {
+    max-width: 46ch;
+  }
+
+  .eyebrow {
+    margin-bottom: var(--space-2);
+    font-size: var(--fs-0);
+    font-weight: 600;
+    letter-spacing: 0.08em;
+    text-transform: uppercase;
+    color: var(--color-muted);
+  }
+
+  .title {
+    margin-bottom: var(--space-3);
+  }
+
+  .lead {
+    color: var(--color-muted);
+  }
+</style>

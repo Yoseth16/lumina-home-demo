@@ -1,15 +1,58 @@
 ---
+import BaseLayout from '../layouts/BaseLayout.astro';
+import SectionHeading from '../components/SectionHeading.astro';
+import Button from '../components/Button.astro';
 ---
+<BaseLayout
+  title="Lumina Home — El arte de transformar tus espacios"
+  description="Disfruta de tus espacios con la iluminación que deseas y un diseño que combina con tu hogar."
+>
+  <section class="hero">
+    <div class="container">
+      <h1>El arte de transformar tus espacios</h1>
+      <p class="hero-lead">
+        Disfruta de tus espacios con la iluminación que deseas y un diseño que combina con tu
+        hogar.
+      </p>
+      <div class="hero-actions">
+        <Button variant="primary" href="/catalogo/">Ver catálogo</Button>
+      </div>
+    </div>
+  </section>
+  <section class="home-note container" data-reveal>
+    <SectionHeading
+      eyebrow="Demostración"
+      title="Secciones en preparación"
+      lead="El catálogo y la página de contacto de esta demostración se están construyendo."
+    />
+  </section>
+</BaseLayout>
 
-<!doctype html>
-<html lang="es">
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>Lumina Home</title>
-  </head>
-  <body>
-    <h1>Lumina Home</h1>
-    <p>Demostración — en construcción</p>
-  </body>
-</html>
+<style>
+  .hero {
+    padding-block: var(--space-9);
+    text-align: center;
+  }
+
+  .hero h1 {
+    margin-inline: auto;
+    max-width: 20ch;
+    font-size: var(--fs-5);
+    color: var(--color-navy-800);
+  }
+
+  .hero-lead {
+    margin: var(--space-5) auto 0;
+    max-width: 52ch;
+    font-size: var(--fs-1);
+    color: var(--color-muted);
+  }
+
+  .hero-actions {
+    margin-top: var(--space-6);
+  }
+
+  .home-note {
+    padding-block: var(--space-7) var(--space-9);
+  }
+</style>

@@ -1,0 +1,75 @@
+---
+interface Props {
+  variant?: 'primary' | 'secondary' | 'ghost';
+  href?: string;
+  type?: 'button' | 'submit';
+  external?: boolean;
+}
+
+const { variant = 'primary', href, type = 'button', external = false } = Astro.props;
+
+const classes = ['btn', `btn-${variant}`].join(' ');
+---
+
+{
+  href !== undefined ? (
+    <a
+      class={classes}
+      href={href}
+      target={external ? '_blank' : undefined}
+      rel={external ? 'noopener noreferrer' : undefined}
+    >
+      <slot />
+    </a>
+  ) : (
+    <button class={classes} type={type}>
+      <slot />
+    </button>
+  )
+}
+
+<style>
+  .btn {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    gap: var(--space-2);
+    min-height: 44px;
+    padding: var(--space-2) var(--space-5);
+    border: 1px solid transparent;
+    border-radius: var(--radius-sm);
+    font-family: inherit;
+    font-size: var(--fs-0);
+    font-weight: 600;
+    text-decoration: none;
+    cursor: pointer;
+  }
+
+  .btn-primary {
+    background: var(--color-navy-800);
+    color: var(--color-ivory);
+  }
+
+  .btn-primary:hover {
+    background: var(--color-navy-600);
+  }
+
+  .btn-secondary {
+    background: transparent;
+    border-color: var(--color-navy-800);
+    color: var(--color-navy-800);
+  }
+
+  .btn-secondary:hover {
+    background: var(--color-cream);
+  }
+
+  .btn-ghost {
+    background: transparent;
+    color: var(--color-navy-800);
+  }
+
+  .btn-ghost:hover {
+    background: var(--color-cream);
+  }
+</style>

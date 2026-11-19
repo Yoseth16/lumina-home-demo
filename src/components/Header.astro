@@ -1,0 +1,189 @@
+---
+import Logo from './Logo.astro';
+import Button from './Button.astro';
+import { site } from '../data/site';
+import { categories } from '../data/catalog';
+import { buildWhatsAppUrl, quoteMessage } from '../lib/whatsapp';
+---
+<header class="site-header">
+  <div class="container header-inner">
+    <a class="brand-link" href="/" aria-label="Lumina Home, ir al inicio">
+      <Logo variant="header" />
+    </a>
+    <button type="button" class="nav-toggle" aria-expanded="false" aria-controls="nav-principal">
+      Menú
+    </button>
+    <nav id="nav-principal" class="site-nav" aria-label="Principal">
+      <ul class="nav-list">
+        <li>
+          <a href="/">Inicio</a>
+        </li>
+        <li class="has-submenu">
+          <a href="/catalogo/">Catálogo</a>
+          <ul class="nav-sublist">
+            {
+              categories.map((category) => (
+                <li>
+                  <a href={`/catalogo/${category.slug}/`}>{category.shortName}</a>
+                </li>
+              ))
+            }
+          </ul>
+        </li>
+        <li>
+          <a href="/contacto/">Contacto</a>
+        </li>
+      </ul>
+      <div class="header-cta">
+        <Button
+          variant="primary"
+          href={buildWhatsAppUrl({ number: site.whatsappNumber, message: quoteMessage({}) })}
+          external
+        >
+          Cotizar por WhatsApp
+        </Button>
+      </div>
+    </nav>
+  </div>
+</header>
+
+<script>
+  import '../scripts/menu.ts';
+</script>
+
+<style>
+  .site-header {
+    background: var(--color-navy-900);
+    color: var(--color-ivory);
+  }
+
+  .header-inner {
+    display: flex;
+    flex-wrap: wrap;
+    align-items: center;
+    gap: var(--space-3);
+    padding-block: var(--space-3);
+  }
+
+  .brand-link {
+    margin-right: auto;
+    text-decoration: none;
+  }
+
+  .brand-link :global(.logo) {
+    color: var(--color-ivory);
+  }
+
+  /* Enfoque visible con alto contraste sobre el fondo azul marino */
+  .site-header :global(a:focus-visible),
+  .site-header :global(button:focus-visible) {
+    outline-color: var(--color-ivory);
+  }
+
+  .nav-toggle {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    min-height: 44px;
+    padding: var(--space-2) var(--space-4);
+    background: transparent;
+    border: 1px solid var(--color-cream);
+    border-radius: var(--radius-sm);
+    color: var(--color-ivory);
+    font-size: var(--fs-0);
+    cursor: pointer;
+  }
+
+  .site-nav {
+    flex-basis: 100%;
+  }
+
+  /* El menú solo se pliega cuando JS está activo (html.js);
+     sin JavaScript queda visible y utilizable. */
+  @media (max-width: 859px) {
+    :global(html.js) .site-nav:not(.is-open) {
+      display: none;
+    }
+  }
+
+  .nav-list {
+    display: grid;
+    gap: var(--space-1);
+    padding: 0;
+    list-style: none;
+  }
+
+  .site-nav a {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    text-decoration: none;
+  }
+
+  .site-nav a:hover {
+    text-decoration: underline;
+  }
+
+  /* Submenú de categorías: expandido en móvil */
+  .nav-sublist {
+    display: grid;
+    gap: var(--space-1);
+    padding: 0 0 0 var(--space-4);
+    list-style: none;
+  }
+
+  .header-cta {
+    margin-top: var(--space-3);
+  }
+
+  /* Escritorio: navegación horizontal en una fila */
+  @media (min-width: 860px) {
+    .header-inner {
+      flex-wrap: nowrap;
+    }
+
+    .nav-toggle {
+      display: none;
+    }
+
+    .site-nav {
+      display: flex;
+      flex-basis: auto;
+      align-items: center;
+      gap: var(--space-5);
+    }
+
+    .nav-list {
+      display: flex;
+      align-items: center;
+      gap: var(--space-5);
+    }
+
+    .nav-sublist {
+      position: absolute;
+      top: 100%;
+      left: 0;
+      display: none;
+      min-width: 220px;
+      padding: var(--space-3);
+      background: var(--color-navy-800);
+      border: 1px solid var(--color-line);
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-soft);
+    }
+
+    .has-submenu {
+      position: relative;
+    }
+
+    /* Submenú revelado al pasar el puntero o enfocar dentro */
+    .has-submenu:hover .nav-sublist,
+    .has-submenu:focus-within .nav-sublist {
+      display: grid;
+    }
+
+    .header-cta {
+      margin-top: 0;
+    }
+  }
+</style>
