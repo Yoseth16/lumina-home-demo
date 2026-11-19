@@ -1,0 +1,19 @@
+# dependencies
+node_modules/
+
+# build output
+dist/
+.astro/
+
+# cliente
+_cliente/
+_cliente
+
+# env
+.env*
+
+# agent runtime (untracked historical)
+.agent-runtime/
+.opencode/
+
+_cliente/
