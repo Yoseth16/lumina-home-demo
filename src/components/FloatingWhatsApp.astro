@@ -3,57 +3,66 @@ import { site } from '../data/site';
 import { buildWhatsAppUrl, quoteMessage } from '../lib/whatsapp';
 
 /**
- * T11a (ítem 1): botón flotante de cotización por WhatsApp, fijo en la
- * esquina inferior. T11a-FIX1/D2: envuelto en el hito
- * `aside` "Cotización rápida" para no quedar fuera de todo landmark.
+ * T12: botón flotante circular con el logotipo de WhatsApp (SVG
+ * autónomo, sin recursos externos) y aviso temporal «¿Hablamos?» que
+ * aparece una sola vez por sesión (1,5 s tras la carga, 5,5 s
+ * visible). T11a-FIX1/D2: envuelto en el hito `aside`
+ * «Cotización rápida» para no quedar fuera de todo landmark.
  * El número nunca vive en el código: llega desde
  * `site.whatsappNumber` a través de los helpers, igual que en el pie.
- * Nombre accesible único por página (FX-10): el texto visible
- * "Cotizar por WhatsApp" más el sufijo oculto "(acceso rápido)".
+ * Nombre accesible único por página (FX-10): todo el texto vive en el
+ * sufijo oculto; el icono es decorativo y el enlace no muestra texto
+ * visible (G6 se mantiene idéntico en las 9 páginas).
  */
 ---
 
 <aside class="fab-region" aria-label="Cotización rápida">
-<a
-  class="fab"
-  href={buildWhatsAppUrl({ number: site.whatsappNumber, message: quoteMessage({}) })}
-  target="_blank"
-  rel="noopener noreferrer"
->
-  <svg
-    aria-hidden="true"
-    focusable="false"
-    width="22"
-    height="22"
-    viewBox="0 0 24 24"
-    fill="#25D366"
+  <span class="fab-bubble" aria-hidden="true">¿Hablamos?</span>
+  <a
+    class="fab"
+    href={buildWhatsAppUrl({ number: site.whatsappNumber, message: quoteMessage({}) })}
+    target="_blank"
+    rel="noopener noreferrer"
   >
-    <path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z" />
-  </svg>
-  Cotizar por WhatsApp<span class="visually-hidden"> (acceso rápido)</span>
-</a>
+    <svg
+      width="28"
+      height="28"
+      viewBox="0 0 32 32"
+      fill="#FFFFFF"
+      aria-hidden="true"
+      focusable="false"
+    >
+      <path
+        fill-rule="evenodd"
+        d="M11.14 26.42A11.5 11.5 0 1 0 5.19 19.93L4.9 26.4Z M12.66 15.25c0.89 1.75 2.33 3.19 4.09 4.09l1.36 -1.37c0.17 -0.17 0.42 -0.22 0.63 -0.15c0.69 0.23 1.44 0.35 2.21 0.35c0.34 0 0.62 0.28 0.62 0.62V20.96c0 0.34 -0.28 0.62 -0.62 0.62c-5.82 0 -10.54 -4.72 -10.54 -10.54c0 -0.34 0.28 -0.62 0.62 -0.62h2.17c0.34 0 0.62 0.28 0.62 0.62c0 0.78 0.12 1.52 0.35 2.21c0.07 0.22 0.02 0.46 -0.16 0.63l-1.36 1.36z"
+      />
+    </svg>
+    <span class="visually-hidden">Cotizar por WhatsApp (acceso rápido)</span>
+  </a>
 </aside>
 
 <style>
-  /* T11a (ítem 1): fijo en la esquina inferior, por encima del contenido
-     y por debajo del enlace de salto (z-index 100). Sin animación de
-     entrada. Ambos ejes usan max(16px, env(safe-area-inset-bottom))
-     según la especificación. */
-  .fab {
+  /* T12: región fija en la esquina inferior, por encima del contenido
+     y por debajo del enlace de salto (z-index 100). Ambos ejes usan
+     max(16px, env(safe-area-inset-bottom)) según la especificación.
+     La burbuja «¿Hablamos?» se ancla a esta región, sobre el botón. */
+  .fab-region {
     position: fixed;
     inset-inline-end: max(16px, env(safe-area-inset-bottom));
     inset-block-end: max(16px, env(safe-area-inset-bottom));
     z-index: 50;
+  }
+
+  /* T12: botón circular de 56 px; logotipo blanco (#FFFFFF, 3.56:1
+     sobre el verde en reposo, 4.43:1 en hover). */
+  .fab {
     display: inline-flex;
     align-items: center;
-    gap: var(--space-2);
-    min-height: 48px;
-    padding: var(--space-2) var(--space-5);
-    border-radius: 999px;
-    background: var(--color-navy-900);
-    color: var(--color-ivory);
-    font-weight: 600;
-    font-size: var(--fs-0);
+    justify-content: center;
+    width: 56px;
+    height: 56px;
+    border-radius: 50%;
+    background: #1B9C49;
     text-decoration: none;
     box-shadow: var(--shadow-soft);
     transition:
@@ -61,26 +70,144 @@ import { buildWhatsAppUrl, quoteMessage } from '../lib/whatsapp';
       background-color 150ms ease;
   }
 
-  /* T11a (ítem 9): misma retroalimentación de pulsación que `.btn` */
+  /* T12: misma retroalimentación de pulsación que `.btn` */
   .fab:active {
-    transform: scale(0.97);
+    transform: scale(0.96);
+  }
+
+  /* T12: anillo de foco azul marino con doble realce marfil, siempre
+     activo (fuera de la media query de puntero fino) */
+  .fab:focus-visible {
+    outline: 3px solid var(--color-navy-900);
+    outline-offset: 3px;
+    box-shadow: 0 0 0 2px var(--color-ivory), var(--shadow-soft);
+  }
+
+  /* T12: aviso temporal «¿Hablamos?» oculto en reposo; se revela por
+     temporizador, foco o hover. `pointer-events: none` para no robar
+     el clic del botón. Texto marfil (#FAF7F1, 16.35:1) sobre azul
+     marino (var(--color-navy-900)). */
+  .fab-bubble {
+    position: absolute;
+    bottom: calc(100% + 10px);
+    inset-inline-end: 0;
+    pointer-events: none;
+    background: var(--color-navy-900);
+    color: var(--color-ivory);
+    font-size: var(--fs-0);
+    font-weight: 600;
+    white-space: nowrap;
+    padding: var(--space-2) var(--space-3);
+    border-radius: var(--radius-md);
+    box-shadow: var(--shadow-soft);
+    opacity: 0;
+    visibility: hidden;
+    transform: translateY(4px);
+    transition:
+      opacity 200ms var(--ease),
+      visibility 200ms var(--ease),
+      transform 200ms var(--ease);
+  }
+
+  /* T12: puntero triangular hacia el botón, centrado sobre el círculo
+     (el centro del botón queda a 28 px del borde inline-end) */
+  .fab-bubble::after {
+    content: "";
+    position: absolute;
+    bottom: -6px;
+    inset-inline-end: 22px;
+    border-block-start: 6px solid var(--color-navy-900);
+    border-inline-start: 6px solid transparent;
+    border-inline-end: 6px solid transparent;
+  }
+
+  /* T12: revelado por temporizador (`is-hint-open`) y por foco de
+     teclado; ambos activos sin depender del puntero fino. */
+  .fab-region.is-hint-open .fab-bubble,
+  .fab-region:has(.fab:focus-visible) .fab-bubble {
+    opacity: 1;
+    visibility: visible;
+    transform: translateY(0);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    /* T12: fondo más oscuro solo con puntero fino real */
+    .fab:hover {
+      background: #168A40;
+    }
+
+    /* T12: el aviso acompaña al hover del botón */
+    .fab-region:has(.fab:hover) .fab-bubble {
+      opacity: 1;
+      visibility: visible;
+      transform: translateY(0);
+    }
   }
 
   @media (prefers-reduced-motion: reduce) {
+    .fab {
+      transition: none;
+    }
+
     .fab:active {
+      transform: none;
+    }
+
+    /* T12: sin movimiento; el aviso aparece y desaparece al instante */
+    .fab-bubble {
+      transition: none;
       transform: none;
     }
   }
 
-  /* Anillo de foco marfil sobre el fondo azul marino, como el encabezado */
-  .fab:focus-visible {
-    outline: 3px solid var(--color-ivory);
-    outline-offset: 3px;
-  }
-
+  /* T12: el botón no tiene sentido sobre papel */
   @media print {
-    .fab {
+    .fab-region {
       display: none;
     }
   }
 </style>
+
+<script>
+  /**
+   * T12: aviso temporal «¿Hablamos?» sobre el botón flotante: única
+   * aparición por sesión (1,5 s tras la carga, 5,5 s visible).
+   * Con `prefers-reduced-motion` o sin `sessionStorage` se degrada en
+   * silencio: el botón sigue totalmente visible y clicable, y la
+   * burbuja responde a foco y hover.
+   */
+  function setUpFabHint(): void {
+    const region = document.querySelector('.fab-region');
+    if (!(region instanceof HTMLElement)) {
+      return;
+    }
+
+    if (window.matchMedia('(prefers-reduced-motion: reduce)').matches) {
+      return;
+    }
+
+    try {
+      if (sessionStorage.getItem('lh-wa-hint-seen') === '1') {
+        return;
+      }
+    } catch {
+      // `sessionStorage` bloqueada: no hay persistencia, se avisa solo en esta carga.
+    }
+
+    window.setTimeout(() => {
+      region.classList.add('is-hint-open');
+
+      try {
+        sessionStorage.setItem('lh-wa-hint-seen', '1');
+      } catch {
+        // Sin `sessionStorage` disponible: el aviso no se repetirá por esta vía.
+      }
+
+      window.setTimeout(() => {
+        region.classList.remove('is-hint-open');
+      }, 5500);
+    }, 1500);
+  }
+
+  setUpFabHint();
+</script>

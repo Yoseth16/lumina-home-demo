@@ -144,8 +144,7 @@ Incluido:
 - Dos fichas de producto completas: Enrollable y Sheer Elegance.
 - Los demás ítems, listados en un grupo compacto «Más productos — ficha
   en preparación» con enlace de cotización por ítem.
-- Botón flotante «Cotizar por WhatsApp» en todas las páginas, excepto
-  Contacto.
+- Botón flotante circular con logo de WhatsApp y aviso breve «¿Hablamos?» en todas las páginas, excepto Contacto.
 - Sección «Cómo cotizar» en la portada, con tres pasos (copy
   provisional).
 - Formulario de contacto con salida por WhatsApp.
