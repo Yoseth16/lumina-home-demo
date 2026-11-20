@@ -136,8 +136,11 @@ const crumbs = [
     text-decoration: none;
   }
 
-  .switcher-link:hover {
-    text-decoration: underline;
+  /* T11a (ítem 9): subrayado solo con puntero fino */
+  @media (hover: hover) and (pointer: fine) {
+    .switcher-link:hover {
+      text-decoration: underline;
+    }
   }
 
   .switcher-link[aria-current='page'] {

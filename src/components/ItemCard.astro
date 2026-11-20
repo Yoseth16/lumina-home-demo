@@ -134,9 +134,17 @@ const thumbImage =
     position: relative;
   }
 
-  .item-card--ficha:hover,
+  /* T11a (ítem 9): el borde al enfocar con teclado va fuera de la media
+     query de hover; el hover, dentro (una lista con `:has()` no
+     soportada invalidaría la regla completa). */
   .item-card--ficha:has(.item-link:focus-visible) {
     border-color: var(--color-sand-600);
+  }
+
+  @media (hover: hover) and (pointer: fine) {
+    .item-card--ficha:hover {
+      border-color: var(--color-sand-600);
+    }
   }
 
   /* T8B (F-2): anillo solo con foco de teclado (:focus-visible del
@@ -192,8 +200,11 @@ const thumbImage =
     inset: 0;
   }
 
-  .item-link:hover {
-    text-decoration: underline;
+  /* T11a (ítem 9): subrayado solo con puntero fino */
+  @media (hover: hover) and (pointer: fine) {
+    .item-link:hover {
+      text-decoration: underline;
+    }
   }
 
   .item-link-hint {

@@ -43,6 +43,21 @@ const classes = ['btn', `btn-${variant}`].join(' ');
     font-weight: 600;
     text-decoration: none;
     cursor: pointer;
+    /* T11a (ítem 9): retroalimentación de pulsación (transición
+       explícita de dos propiedades, nunca genérica) */
+    transition:
+      transform 120ms var(--ease),
+      background-color 150ms ease;
+  }
+
+  .btn:active {
+    transform: scale(0.97);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .btn:active {
+      transform: none;
+    }
   }
 
   .btn-primary {
@@ -50,8 +65,27 @@ const classes = ['btn', `btn-${variant}`].join(' ');
     color: var(--color-ivory);
   }
 
-  .btn-primary:hover {
-    background: var(--color-navy-600);
+  /* T11a (ítem 9): hovers solo para punteros finos */
+  @media (hover: hover) and (pointer: fine) {
+    .btn-primary:hover {
+      background: var(--color-navy-600);
+    }
+
+    .btn-secondary:hover {
+      background: var(--color-cream);
+    }
+
+    .btn-ghost:hover {
+      background: var(--color-cream);
+    }
+
+    .btn-on-dark:hover {
+      background: var(--color-cream);
+    }
+
+    .btn-on-dark-outline:hover {
+      background: color-mix(in srgb, var(--color-ivory) 14%, transparent);
+    }
   }
 
   .btn-secondary {
@@ -60,17 +94,9 @@ const classes = ['btn', `btn-${variant}`].join(' ');
     color: var(--color-navy-800);
   }
 
-  .btn-secondary:hover {
-    background: var(--color-cream);
-  }
-
   .btn-ghost {
     background: transparent;
     color: var(--color-navy-800);
-  }
-
-  .btn-ghost:hover {
-    background: var(--color-cream);
   }
 
   /* FX-01: sobre fondos azul marino (navy-900) el relleno azul marino no
@@ -82,17 +108,9 @@ const classes = ['btn', `btn-${variant}`].join(' ');
     color: var(--color-navy-900);
   }
 
-  .btn-on-dark:hover {
-    background: var(--color-cream);
-  }
-
   .btn-on-dark-outline {
     background: transparent;
     border-color: var(--color-ivory);
     color: var(--color-ivory);
-  }
-
-  .btn-on-dark-outline:hover {
-    background: color-mix(in srgb, var(--color-ivory) 14%, transparent);
   }
 </style>

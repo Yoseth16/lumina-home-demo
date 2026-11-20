@@ -36,7 +36,19 @@ if (item.description === undefined) {
 }
 
 const description = item.description;
-const features = item.features ?? [];
+
+/* T11a (ítem 2): la lista de características se renderiza sin guardia;
+   ambos ítems de ficha tienen `features` no vacío (verificado con grep
+   en src/data/catalog.ts). Brazo defensivo (única rama no ejercitada
+   por la build, admitida): un ítem de ficha sin características
+   interrumpe el build, igual que la descripción. */
+if (item.features === undefined) {
+  throw new Error(
+    `[producto] el ítem de ficha "${item.slug}" no tiene características en el catálogo.`,
+  );
+}
+
+const features = item.features;
 const mediaIds = item.media ?? [];
 const kindById = new Map(mediaRegistry.map((entry) => [entry.id, entry.kind]));
 
@@ -88,44 +100,36 @@ const crumbs = [
             </div>
           )
         }
-      </div>
-    </div>
-  </section>
-
-  {
-    features.length > 0 && (
-      <section class="product-features" data-reveal>
-        <div class="container">
+        {/* T11a (ítem 2): características y CTA dentro del héroe; en móvil
+            el orden de lectura es texto → medio → acciones. */}
+        <div class="product-hero-actions">
           <h2 class="features-title">Características</h2>
           <ul class="features-list">
             {features.map((feature) => (
               <li class="features-item">{feature}</li>
             ))}
           </ul>
+          <div class="quote-actions">
+            <WhatsAppButton
+              variant="on-dark"
+              item={item.name}
+              category={category.name}
+              label="Cotizar por WhatsApp"
+            />
+            <a class="back-link" href={`/catalogo/${category.slug}/`}>
+              Volver a {category.name}
+            </a>
+          </div>
         </div>
-      </section>
-    )
-  }
-
-  <section class="product-quote" data-reveal>
-    <div class="container">
-      <div class="quote-actions">
-        <WhatsAppButton
-          item={item.name}
-          category={category.name}
-          label="Cotizar por WhatsApp"
-        />
-        <a class="back-link" href={`/catalogo/${category.slug}/`}>
-          Volver a {category.name}
-        </a>
       </div>
     </div>
   </section>
 
   {
-    /* T8B (F-1): la galería va después del CTA de cotización y se renderiza
-       sin condicional: los dos ítems de ficha tienen 2 medios (verificado
-       con grep en src/data/catalog.ts), así que siempre tiene contenido. */
+    /* T8B (F-1): la galería va después del héroe (que ya contiene el CTA
+       de cotización, T11a ítem 2) y se renderiza sin condicional: los
+       dos ítems de ficha tienen 2 medios (verificado con grep en
+       src/data/catalog.ts), así que siempre tiene contenido. */
   }
   <section class="product-gallery" data-reveal>
     <div class="container">
@@ -138,11 +142,11 @@ const crumbs = [
 </BaseLayout>
 
 <style>
-  /* Banda de producto: azul marino con texto marfil, sin CTAs.
-     T8B (F-1): solo el medio 0 acompaña al texto (apilado en móvil
-     justo después del título/entrada; dos columnas desde 768 px); el
-     resto de medios va en la sección "Galería", después del CTA de
-     cotización. */
+  /* Banda de producto: azul marino con texto marfil. T11a (ítem 2): el
+     héroe lleva título, entrada, medio 0, características y CTA; el
+     resto de medios va en la sección "Galería", después del héroe.
+     Escritorio (>= 768 px): dos columnas con áreas con nombre, el medio
+     a la derecha ocupa las dos filas. */
   .product-hero {
     padding-block: var(--space-6) var(--space-7);
     background: var(--color-navy-900);
@@ -192,8 +196,25 @@ const crumbs = [
   @media (min-width: 768px) {
     .product-hero-columns {
       grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      grid-template-areas:
+        'text media'
+        'actions media';
       column-gap: var(--space-6);
       align-items: start;
+    }
+
+    .product-hero-text {
+      grid-area: text;
+    }
+
+    /* T11a (ítem 2): el medio ocupa las dos filas de la derecha */
+    .product-media {
+      grid-area: media;
+      align-self: start;
+    }
+
+    .product-hero-actions {
+      grid-area: actions;
     }
 
     .product-hero-media {
@@ -211,13 +232,11 @@ const crumbs = [
     color: var(--color-cream);
   }
 
-  /* Características: lista simple sobre fondo claro */
-  .product-features {
-    padding-block: var(--space-6);
-  }
-
+  /* T11a (ítem 2): características dentro del héroe, sobre azul marino;
+     la lista va en una sola columna (sin la regla de 3 columnas). */
   .features-title {
     margin-bottom: var(--space-4);
+    color: var(--color-ivory);
   }
 
   .features-list {
@@ -228,23 +247,20 @@ const crumbs = [
     list-style: none;
   }
 
-  @media (min-width: 900px) {
-    .features-list {
-      grid-template-columns: repeat(3, 1fr);
-    }
-  }
-
+  /* Tarjeta translúcida: tinte marfil <= 8% sobre navy-900; el texto
+     marfil mantiene > 4.5:1 (verificado con la fórmula WCAG). */
   .features-item {
     padding: var(--space-3) var(--space-4);
-    border: 1px solid var(--color-line);
+    border: 1px solid color-mix(in srgb, var(--color-ivory) 30%, transparent);
     border-radius: var(--radius-md);
-    background: var(--color-cream);
-    color: var(--color-navy-800);
+    background: color-mix(in srgb, var(--color-ivory) 8%, transparent);
+    color: var(--color-ivory);
     font-weight: 600;
   }
 
-  /* Galería de medios (T8B/F-1): sección propia después del CTA de
-     cotización; rejilla de una columna en móvil y dos desde 768 px. */
+  /* Galería de medios (T8B/F-1; T11a-FIX1/N1): rejilla
+     `repeat(auto-fill, minmax(280px, 360px))`, una pista en móvil y a
+     768 px, tres a 1280 px. */
   .product-gallery {
     padding-block: var(--space-6) var(--space-8);
   }
@@ -264,16 +280,16 @@ const crumbs = [
     }
   }
 
-  /* Cotización sobre fondo claro: el botón primario nunca va sobre azul */
-  .product-quote {
-    padding-block: var(--space-6) var(--space-8);
-  }
-
+  /* T11a (ítem 2): el CTA usa la variante `on-dark` existente y el
+     enlace de vuelta va en marfil sobre el azul marino; su anillo de
+     foco viene de .product-hero :global(a:focus-visible).
+     T11a-FIX1/D1: 24 px sobre la última tarjeta de características. */
   .quote-actions {
     display: flex;
     flex-wrap: wrap;
     gap: var(--space-3);
     align-items: center;
+    margin-block-start: var(--space-5);
   }
 
   .back-link {
@@ -281,11 +297,14 @@ const crumbs = [
     align-items: center;
     min-height: 44px;
     font-weight: 600;
-    color: var(--color-navy-800);
+    color: var(--color-ivory);
     text-decoration: none;
   }
 
-  .back-link:hover {
-    text-decoration: underline;
+  /* T11a (ítem 9): subrayado solo con puntero fino */
+  @media (hover: hover) and (pointer: fine) {
+    .back-link:hover {
+      text-decoration: underline;
+    }
   }
 </style>

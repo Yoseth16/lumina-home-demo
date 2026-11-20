@@ -1,6 +1,7 @@
 /**
  * Animación de aparición con IntersectionObserver: añade `is-visible` a
- * los elementos `[data-reveal]` una sola vez al entrar en pantalla.
+ * los elementos `[data-reveal]` una sola vez, tan pronto como cualquier
+ * parte del elemento entra en el viewport (T11a/B1).
  * Con `prefers-reduced-motion` o sin soporte de IntersectionObserver,
  * todo queda visible de inmediato.
  */
@@ -29,7 +30,10 @@ function setUpReveal(): void {
         }
       }
     },
-    { threshold: 0.15 },
+    /* T11a/B1: un umbral fraccional nunca se disparaba en secciones
+       más altas que ~6.7x el viewport; se revela al entrar cualquier
+       parte en pantalla, dejando un 10% inferior sin contar. */
+    { threshold: 0, rootMargin: '0px 0px -10% 0px' },
   );
 
   for (const element of targets) {

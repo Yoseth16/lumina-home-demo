@@ -64,6 +64,13 @@ import { buildWhatsAppUrl, quoteMessage } from '../lib/whatsapp';
     outline-color: var(--color-ivory);
   }
 
+  /* T11a (ítem 1): con el botón flotante visible, el pie gana espacio
+     inferior para que su última línea nunca quede cubierta (WCAG
+     2.4.11); el resto del padding del pie se mantiene. */
+  :global(.has-fab) .site-footer {
+    padding-block-end: calc(80px + env(safe-area-inset-bottom));
+  }
+
   .footer-grid {
     display: grid;
     gap: var(--space-6);
@@ -95,8 +102,11 @@ import { buildWhatsAppUrl, quoteMessage } from '../lib/whatsapp';
     text-decoration: none;
   }
 
-  .footer-links a:hover {
-    text-decoration: underline;
+  /* T11a (ítem 9): subrayado solo con puntero fino */
+  @media (hover: hover) and (pointer: fine) {
+    .footer-links a:hover {
+      text-decoration: underline;
+    }
   }
 
   .wa-notice {

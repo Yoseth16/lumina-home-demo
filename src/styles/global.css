@@ -15,6 +15,10 @@
 html {
   -webkit-text-size-adjust: 100%;
   scroll-behavior: smooth;
+  /* T11a (ítems 1 y 9): el destino del scroll nunca queda cubierto por
+     el botón flotante (48 px + 32 px); sin destello de tap en móvil. */
+  scroll-padding-block-end: 80px;
+  -webkit-tap-highlight-color: transparent;
 }
 
 body {
@@ -68,6 +72,17 @@ h3 {
 
 a {
   color: inherit;
+}
+
+/* T11a (ítem 9): respuesta táctil inmediata, sin retardo de doble tap */
+a,
+button {
+  touch-action: manipulation;
+}
+
+/* T11a (ítem 10): evita palabras huérfanas en los párrafos */
+p {
+  text-wrap: pretty;
 }
 
 /* Contenedor central */

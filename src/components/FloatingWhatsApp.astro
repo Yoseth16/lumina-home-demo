@@ -1,0 +1,86 @@
+---
+import { site } from '../data/site';
+import { buildWhatsAppUrl, quoteMessage } from '../lib/whatsapp';
+
+/**
+ * T11a (ítem 1): botón flotante de cotización por WhatsApp, fijo en la
+ * esquina inferior. T11a-FIX1/D2: envuelto en el hito
+ * `aside` "Cotización rápida" para no quedar fuera de todo landmark.
+ * El número nunca vive en el código: llega desde
+ * `site.whatsappNumber` a través de los helpers, igual que en el pie.
+ * Nombre accesible único por página (FX-10): el texto visible
+ * "Cotizar por WhatsApp" más el sufijo oculto "(acceso rápido)".
+ */
+---
+
+<aside class="fab-region" aria-label="Cotización rápida">
+<a
+  class="fab"
+  href={buildWhatsAppUrl({ number: site.whatsappNumber, message: quoteMessage({}) })}
+  target="_blank"
+  rel="noopener noreferrer"
+>
+  <svg
+    aria-hidden="true"
+    focusable="false"
+    width="22"
+    height="22"
+    viewBox="0 0 24 24"
+    fill="#25D366"
+  >
+    <path d="M20 2H4a2 2 0 0 0-2 2v18l4-4h14a2 2 0 0 0 2-2V4a2 2 0 0 0-2-2z" />
+  </svg>
+  Cotizar por WhatsApp<span class="visually-hidden"> (acceso rápido)</span>
+</a>
+</aside>
+
+<style>
+  /* T11a (ítem 1): fijo en la esquina inferior, por encima del contenido
+     y por debajo del enlace de salto (z-index 100). Sin animación de
+     entrada. Ambos ejes usan max(16px, env(safe-area-inset-bottom))
+     según la especificación. */
+  .fab {
+    position: fixed;
+    inset-inline-end: max(16px, env(safe-area-inset-bottom));
+    inset-block-end: max(16px, env(safe-area-inset-bottom));
+    z-index: 50;
+    display: inline-flex;
+    align-items: center;
+    gap: var(--space-2);
+    min-height: 48px;
+    padding: var(--space-2) var(--space-5);
+    border-radius: 999px;
+    background: var(--color-navy-900);
+    color: var(--color-ivory);
+    font-weight: 600;
+    font-size: var(--fs-0);
+    text-decoration: none;
+    box-shadow: var(--shadow-soft);
+    transition:
+      transform 120ms var(--ease),
+      background-color 150ms ease;
+  }
+
+  /* T11a (ítem 9): misma retroalimentación de pulsación que `.btn` */
+  .fab:active {
+    transform: scale(0.97);
+  }
+
+  @media (prefers-reduced-motion: reduce) {
+    .fab:active {
+      transform: none;
+    }
+  }
+
+  /* Anillo de foco marfil sobre el fondo azul marino, como el encabezado */
+  .fab:focus-visible {
+    outline: 3px solid var(--color-ivory);
+    outline-offset: 3px;
+  }
+
+  @media print {
+    .fab {
+      display: none;
+    }
+  }
+</style>
