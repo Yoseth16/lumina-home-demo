@@ -53,6 +53,11 @@ import { buildWhatsAppUrl, quoteMessage } from '../lib/whatsapp';
 
 <style>
   .site-header {
+    /* T13 (ítem 5): cabecera fija sutil; el submenú (31) y el FAB (50)
+       quedan por encima. */
+    position: sticky;
+    top: 0;
+    z-index: 30;
     background: var(--color-navy-900);
     color: var(--color-ivory);
   }
@@ -103,6 +108,13 @@ import { buildWhatsAppUrl, quoteMessage } from '../lib/whatsapp';
   @media (max-width: 859px) {
     :global(html.js) .site-nav:not(.is-open) {
       display: none;
+    }
+
+    /* T13 (ítem 5): en ventanas bajas el menú abierto no atrapa los
+       enlaces: se limita a la altura visible y se deja desplazar. */
+    .site-nav.is-open {
+      max-height: calc(100dvh - 72px);
+      overflow-y: auto;
     }
   }
 
@@ -173,9 +185,10 @@ import { buildWhatsAppUrl, quoteMessage } from '../lib/whatsapp';
       top: 100%;
       left: 0;
       display: none;
-      /* T11b-FIX1 (D2): el desplegable se pinta sobre el héroe de la
-         portada (por debajo del FAB, 50, y del skip-link, 100). */
-      z-index: 20;
+      /* T11b-FIX1 (D2) + T13 (ítem 5): el desplegable se pinta sobre la
+         cabecera fija y el héroe de la portada (por debajo del FAB, 50,
+         y del skip-link, 100). */
+      z-index: 31;
       min-width: 220px;
       padding: var(--space-3);
       background: var(--color-navy-800);

@@ -60,14 +60,21 @@ const cardImage =
   }
   <h3 class="category-name">{category.name}</h3>
   <p class="category-tagline">{category.tagline}</p>
+  {/* T13 (ítem 1): opciones reales derivadas de `catalog.ts` (5/2/11,
+      siempre plural: el catálogo nunca tiene menos de 2 por categoría). */}
+  <p class="category-count">{category.items.length} opciones</p>
   <a class="category-link" href={`/catalogo/${category.slug}/`}>Ver {category.name}</a>
 </article>
 
 <style>
+  /* T13 (ítem 1): columna flexible con el enlace empujado al fondo, de
+     modo que las 3 tarjetas alinean por su borde inferior aunque solo
+     una tenga foto; la tarjeta entera es clicable (enlace estirado). */
   .category-card {
-    display: grid;
+    position: relative;
+    display: flex;
+    flex-direction: column;
     gap: var(--space-3);
-    align-content: start;
     padding: var(--space-5) var(--space-4);
     border: 1px solid var(--color-line);
     border-radius: var(--radius-md);
@@ -89,17 +96,47 @@ const cardImage =
     color: var(--color-muted);
   }
 
+  /* T13 (ítem 1): conteo real de la categoría, discreto */
+  .category-count {
+    font-size: var(--fs-0);
+    font-weight: 600;
+    color: var(--color-navy-800);
+  }
+
   .category-link {
     display: inline-flex;
     align-items: center;
     min-height: 44px;
-    align-self: start;
+    /* T13 (ítem 1): pegado al borde inferior de la tarjeta */
+    margin-top: auto;
+    align-self: flex-start;
     font-weight: 600;
     text-decoration: none;
   }
 
-  /* T11a (ítem 9): subrayado solo con puntero fino */
+  /* T13 (ítem 1): superficie de clic estirada sobre toda la tarjeta,
+     el mismo patrón que `ItemCard.astro` (sin enlaces anidados). */
+  .category-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
+  /* T13 (ítem 1): anillo solo con foco de teclado (:focus-visible del
+     enlace, leído con :has()); el anillo propio del enlace (regla
+     global a:focus-visible) se conserva como respaldo en navegadores
+     sin :has(), igual que en `ItemCard.astro`. */
+  .category-card:has(.category-link:focus-visible) {
+    outline: 3px solid var(--color-navy-800);
+    outline-offset: 2px;
+  }
+
+  /* T11a (ítem 9) + T13 (ítem 1): subrayado y borde solo con puntero fino */
   @media (hover: hover) and (pointer: fine) {
+    .category-card:hover {
+      border-color: var(--color-navy-800);
+    }
+
     .category-link:hover {
       text-decoration: underline;
     }

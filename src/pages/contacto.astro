@@ -38,55 +38,88 @@ const hasWhatsAppNumber = site.whatsappNumber !== null;
 
   <section class="contact-form-section" data-reveal>
     <div class="container">
-      <div class="js-only">
-        <form class="quote-form" data-quote-form novalidate data-wa-number={site.whatsappNumber ?? ''}>
-          <div class="field">
-            <label for="nombre">Nombre</label>
-            <input
-              id="nombre"
-              name="nombre"
-              type="text"
-              autocomplete="name"
-              required
-              aria-describedby="nombre-error"
-            />
-            <p class="field-error" id="nombre-error" aria-live="polite"></p>
+      {/* T13 (ítem 3): dos columnas en escritorio — formulario a la
+          izquierda, guía «Cómo cotizar» a la derecha. */}
+      <div class="contact-layout">
+        <div class="contact-main">
+          <div class="js-only">
+            <form class="quote-form" data-quote-form novalidate data-wa-number={site.whatsappNumber ?? ''}>
+              <div class="field">
+                <label for="nombre">Nombre</label>
+                <input
+                  id="nombre"
+                  name="nombre"
+                  type="text"
+                  autocomplete="name"
+                  required
+                  aria-describedby="nombre-error"
+                />
+                <p class="field-error" id="nombre-error" aria-live="polite"></p>
+              </div>
+
+              <div class="field">
+                <label for="service">Producto</label>
+                <select id="service" name="service" required aria-describedby="service-error">
+                  <option value="" disabled selected>Selecciona un producto</option>
+                  {
+                    categories.map((category) => (
+                      <optgroup label={category.name}>
+                        {category.items.map((item) => (
+                          <option
+                            value={`${category.slug}/${item.slug}`}
+                            data-item={item.name}
+                            data-category={category.name}
+                          >
+                            {item.name}
+                          </option>
+                        ))}
+                      </optgroup>
+                    ))
+                  }
+                </select>
+                <p class="field-error" id="service-error" aria-live="polite"></p>
+              </div>
+
+              <div class="field">
+                <label for="message">Mensaje (opcional)</label>
+                {/* T13 (ítem 3): ejemplo de uso dentro del área de texto */}
+                <textarea
+                  id="message"
+                  name="message"
+                  rows="4"
+                  placeholder="Medidas aproximadas o tipo de espacio"
+                ></textarea>
+              </div>
+
+              <Button type="submit" variant="primary">Enviar por WhatsApp</Button>
+            </form>
           </div>
 
-          <div class="field">
-            <label for="service">Producto</label>
-            <select id="service" name="service" required aria-describedby="service-error">
-              <option value="" disabled selected>Selecciona un producto</option>
-              {
-                categories.map((category) => (
-                  <optgroup label={category.name}>
-                    {category.items.map((item) => (
-                      <option
-                        value={`${category.slug}/${item.slug}`}
-                        data-item={item.name}
-                        data-category={category.name}
-                      >
-                        {item.name}
-                      </option>
-                    ))}
-                  </optgroup>
-                ))
-              }
-            </select>
-            <p class="field-error" id="service-error" aria-live="polite"></p>
+          <div class="no-js-only">
+            <WhatsAppButton label="Escríbenos por WhatsApp" context=" desde el formulario de contacto" />
           </div>
+        </div>
 
-          <div class="field">
-            <label for="message">Mensaje (opcional)</label>
-            <textarea id="message" name="message" rows="4"></textarea>
-          </div>
-
-          <Button type="submit" variant="primary">Enviar por WhatsApp</Button>
-        </form>
-      </div>
-
-      <div class="no-js-only">
-        <WhatsAppButton label="Escríbenos por WhatsApp" context=" desde el formulario de contacto" />
+        {/* T13 (ítem 3): mismos pasos provisionales de la portada, sin
+            inventar horarios, dirección ni teléfono. */}
+        <aside class="contact-aside" aria-labelledby="contacto-como-cotizar">
+          <h2 id="contacto-como-cotizar">Cómo cotizar</h2>
+          <ol class="contact-steps" role="list">
+            <li class="step">
+              <span class="step-number" aria-hidden="true">1</span>
+              <span class="step-text">Elige el producto en el catálogo.</span>
+            </li>
+            <li class="step">
+              <span class="step-number" aria-hidden="true">2</span>
+              <span class="step-text">Escríbenos por WhatsApp con el producto y las medidas de tu espacio.</span>
+            </li>
+            <li class="step">
+              <span class="step-number" aria-hidden="true">3</span>
+              <span class="step-text">Recibe tu cotización por el mismo chat.</span>
+            </li>
+          </ol>
+          <p class="contact-city">{site.city}</p>
+        </aside>
       </div>
     </div>
   </section>
@@ -144,9 +177,25 @@ const hasWhatsAppNumber = site.whatsappNumber !== null;
     display: none;
   }
 
+  /* T13 (ítem 3): rejilla de dos columnas — una en móvil, formulario y
+     guía a partir de 900 px. */
+  .contact-layout {
+    display: grid;
+    gap: var(--space-6);
+  }
+
+  @media (min-width: 900px) {
+    .contact-layout {
+      grid-template-columns: minmax(0, 1.2fr) minmax(0, 0.8fr);
+      gap: var(--space-7);
+      align-items: start;
+    }
+  }
+
   .quote-form {
     display: grid;
     gap: var(--space-5);
+    width: 100%;
     max-width: 560px;
     padding: var(--space-5) var(--space-4);
     border: 1px solid var(--color-line);
@@ -180,11 +229,66 @@ const hasWhatsAppNumber = site.whatsappNumber !== null;
     resize: vertical;
   }
 
+  /* T13 (ítem 3): error con contraste 6.76:1 sobre crema (#F1E9DC) */
   .field-error {
     min-height: 1.4em;
     font-size: var(--fs-0);
     font-weight: 600;
-    color: var(--color-ink);
+    color: #9b1c1c;
+  }
+
+  .field input[aria-invalid='true'],
+  .field select[aria-invalid='true'] {
+    border-color: #9b1c1c;
+  }
+
+  /* T13 (ítem 3): guía lateral con los mismos pasos numerados de la
+     portada (círculo azul marino, texto marfil). */
+  .contact-aside {
+    display: grid;
+    gap: var(--space-4);
+    align-content: start;
+  }
+
+  .contact-aside h2 {
+    color: var(--color-navy-800);
+  }
+
+  .contact-steps {
+    display: grid;
+    gap: var(--space-4);
+    padding: 0;
+    margin-bottom: 0;
+    list-style: none;
+  }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    background: var(--color-navy-800);
+    color: var(--color-ivory);
+    font-weight: 600;
+  }
+
+  .step-text {
+    padding-block: var(--space-1);
+  }
+
+  .contact-city {
+    font-size: var(--fs-0);
+    font-weight: 600;
+    color: var(--color-muted);
   }
 
   .no-js-only {

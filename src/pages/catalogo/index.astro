@@ -9,11 +9,18 @@ import { categories } from '../../data/catalog';
   title="Catálogo — Lumina Home"
   description="Categorías de Lumina Home: polarizados, papel tapiz / tapizados y persianas y cortinas."
 >
-  <section class="catalogo-section" data-reveal>
+  {/* T13 (ítem 2): banda azul marino igual que las páginas de categoría
+      y contacto, con la rejilla debajo en su propia sección. */}
+  <section class="catalogo-hero">
     <div class="container">
       <Breadcrumbs items={[{ label: 'Inicio', href: '/' }, { label: 'Catálogo' }]} />
       <h1 class="catalogo-title">Catálogo</h1>
       <p class="catalogo-lead">Elige una categoría para ver los productos.</p>
+    </div>
+  </section>
+
+  <section class="catalogo-section" data-reveal>
+    <div class="container">
       <h2 class="visually-hidden">Categorías del catálogo</h2>
       <div class="category-grid">
         {categories.map((category) => <CategoryCard category={category} />)}
@@ -23,25 +30,35 @@ import { categories } from '../../data/catalog';
 </BaseLayout>
 
 <style>
-  .catalogo-section {
-    padding-block: var(--space-6) var(--space-8);
+  /* T13 (ítem 2): banda de encabezado azul marino con texto marfil */
+  .catalogo-hero {
+    padding-block: var(--space-6) var(--space-7);
+    background: var(--color-navy-900);
+    color: var(--color-ivory);
+  }
+
+  .catalogo-hero :global(a:focus-visible) {
+    outline-color: var(--color-ivory);
   }
 
   .catalogo-title {
     margin-block: var(--space-3) var(--space-2);
-    color: var(--color-navy-800);
+    color: var(--color-ivory);
   }
 
   .catalogo-lead {
     max-width: 46ch;
-    color: var(--color-muted);
+    color: var(--color-cream);
+  }
+
+  .catalogo-section {
+    padding-block: var(--space-6) var(--space-8);
   }
 
   /* Categorías: una columna en móvil, tres a partir de 900 px */
   .category-grid {
     display: grid;
     gap: var(--space-4);
-    margin-top: var(--space-6);
   }
 
   @media (min-width: 900px) {

@@ -3,6 +3,14 @@ import Logo from './Logo.astro';
 import { site } from '../data/site';
 import { categories } from '../data/catalog';
 import { buildWhatsAppUrl, quoteMessage } from '../lib/whatsapp';
+
+/* T13 (ítem 6): enlaces de las 2 fichas completas derivados del
+   catálogo (cero URLs de producto escritas a mano). */
+const fichaItems = categories.flatMap((category) =>
+  category.items
+    .filter((item) => item.status === 'ficha')
+    .map((item) => ({ name: item.name, href: `/catalogo/${category.slug}/${item.slug}/` })),
+);
 ---
 <footer class="site-footer">
   <div class="container footer-grid">
@@ -16,6 +24,13 @@ import { buildWhatsAppUrl, quoteMessage } from '../lib/whatsapp';
           categories.map((category) => (
             <li>
               <a href={`/catalogo/${category.slug}/`}>{category.shortName}</a>
+            </li>
+          ))
+        }
+        {
+          fichaItems.map((item) => (
+            <li>
+              <a href={item.href}>{item.name}</a>
             </li>
           ))
         }
@@ -34,6 +49,9 @@ import { buildWhatsAppUrl, quoteMessage } from '../lib/whatsapp';
             Escríbenos por WhatsApp
           </a>
         </li>
+        {/* T13 (ítem 6): enlace a la página de contacto además del canal
+            de WhatsApp */}
+        <li><a href="/contacto/">Formulario de contacto</a></li>
         <li>{site.city}</li>
         {site.email && <li>{site.email}</li>}
         {site.address && <li>{site.address}</li>}

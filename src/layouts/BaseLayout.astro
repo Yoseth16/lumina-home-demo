@@ -7,6 +7,9 @@ import Header from '../components/Header.astro';
 import Footer from '../components/Footer.astro';
 import FloatingWhatsApp from '../components/FloatingWhatsApp.astro';
 import DemoRibbon from '../components/DemoRibbon.astro';
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { mediaRegistry } from '../data/media';
 import { site } from '../data/site';
 
 interface Props {
@@ -22,6 +25,27 @@ const { title, description } = Astro.props;
    por la build real: las 8 páginas restantes lo renderizan y contacto
    no. */
 const showFloatingWhatsApp = !Astro.url.pathname.startsWith('/contacto');
+
+/* T13 (ítem 4): imagen de vista previa para Open Graph derivada del
+   registro (foto de obra de persianas), igual que `MediaSlot.astro`;
+   se emite en las 9 páginas. Defensivas (únicas ramas no ejercitadas
+   por la build real): id no registrado o archivo faltante, sin
+   ternarios ni cortocircuitos (T13-FIX1, hallazgo 1). */
+const imageSources = import.meta.glob('/src/assets/**/*.{jpeg,jpg,png}', {
+  eager: true,
+  import: 'default',
+}) as Record<string, ImageMetadata>;
+
+const ogEntry = mediaRegistry.find((candidate) => candidate.id === 'obra-enrollable-doble-altura');
+if (ogEntry === undefined) {
+  throw new Error('BaseLayout: medio de vista previa no disponible: "obra-enrollable-doble-altura".');
+}
+const ogSource = imageSources[`/${ogEntry.file}`];
+if (ogSource === undefined) {
+  throw new Error('BaseLayout: archivo de vista previa no disponible: "obra-enrollable-doble-altura".');
+}
+
+const ogImage = await getImage({ src: ogSource, width: 1200, format: 'jpeg' });
 ---
 
 <!doctype html>
@@ -44,6 +68,8 @@ const showFloatingWhatsApp = !Astro.url.pathname.startsWith('/contacto');
     }
     <meta property="og:title" content={title} />
     <meta property="og:description" content={description} />
+    <meta property="og:image" content={ogImage.src} />
+    <meta name="twitter:card" content="summary_large_image" />
     <meta property="og:type" content="website" />
     <meta property="og:locale" content="es_CO" />
     <meta property="og:site_name" content={site.name} />

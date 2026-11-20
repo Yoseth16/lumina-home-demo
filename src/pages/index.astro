@@ -152,6 +152,9 @@ const benefits = [
      ancho (T11b, ítem 3). */
   .hero {
     position: relative;
+    /* T13 (ítem 7): azul marino de respaldo mientras carga la foto (y
+       de fondo permanente si la imagen no llega a renderizarse). */
+    background: var(--color-navy-900);
   }
 
   .hero-media {
@@ -231,6 +234,13 @@ const benefits = [
   /* Secciones intermedias */
   .home-section {
     padding-block: var(--space-7) var(--space-8);
+  }
+
+  /* T13 (ítem 5): con la cabecera fija, los anclajes bajan su destino
+     de desplazamiento para que el título no quede tapado. */
+  .home-section[id],
+  .cotizar[id] {
+    scroll-margin-top: 96px;
   }
 
   /* Presentación: dos columnas desde 900 px (FX-07): texto a la
