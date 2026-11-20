@@ -40,6 +40,15 @@ const features = item.features ?? [];
 const mediaIds = item.media ?? [];
 const kindById = new Map(mediaRegistry.map((entry) => [entry.id, entry.kind]));
 
+/* T8B (F-1): la galería son los medios 1..n; hoy todos son vídeos en
+   esa posición. Guard defensivo (única rama no ejercitada por la build,
+   admitida por la orden): un medio de galería que no sea vídeo
+   interrumpe el build, igual que haría VideoSlot. */
+const galleryIds = mediaIds.slice(1);
+if (galleryIds.some((id) => kindById.get(id) !== 'video')) {
+  throw new Error('product gallery: only video media supported');
+}
+
 const crumbs = [
   { label: 'Inicio', href: '/' },
   { label: 'Catálogo', href: '/catalogo/' },
@@ -60,9 +69,8 @@ const crumbs = [
         {
           mediaIds.length > 0 && (
             <div class="product-media">
-              {mediaIds.map((id, index) => (
-                <div class={index === 0 ? 'product-hero-media' : 'product-rest-media'}>
-                  {index === 1 && <h2 class="gallery-title">Galería</h2>}
+              {mediaIds.slice(0, 1).map((id) => (
+                <div class="product-hero-media">
                   {kindById.get(id) === 'video' ? (
                     <VideoSlot id={id} />
                   ) : (
@@ -113,13 +121,28 @@ const crumbs = [
       </div>
     </div>
   </section>
+
+  {
+    /* T8B (F-1): la galería va después del CTA de cotización y se renderiza
+       sin condicional: los dos ítems de ficha tienen 2 medios (verificado
+       con grep en src/data/catalog.ts), así que siempre tiene contenido. */
+  }
+  <section class="product-gallery" data-reveal>
+    <div class="container">
+      <h2 class="gallery-title">Galería</h2>
+      <div class="product-gallery-grid">
+        {galleryIds.map((id) => <VideoSlot id={id} />)}
+      </div>
+    </div>
+  </section>
 </BaseLayout>
 
 <style>
   /* Banda de producto: azul marino con texto marfil, sin CTAs.
-     FX-15: el primer medio acompaña al texto (apilado en móvil justo
-     después del título/entrada; dos columnas desde 768 px). El resto
-     de medios sigue en la misma columna bajo el título "Galería". */
+     T8B (F-1): solo el medio 0 acompaña al texto (apilado en móvil
+     justo después del título/entrada; dos columnas desde 768 px); el
+     resto de medios va en la sección "Galería", después del CTA de
+     cotización. */
   .product-hero {
     padding-block: var(--space-6) var(--space-7);
     background: var(--color-navy-900);
@@ -145,8 +168,7 @@ const crumbs = [
   }
 
   .gallery-title {
-    margin-bottom: var(--space-3);
-    color: var(--color-ivory);
+    margin-bottom: var(--space-4);
   }
 
   .product-media :global(.video-slot figcaption) {
@@ -221,8 +243,26 @@ const crumbs = [
     font-weight: 600;
   }
 
-  /* Galería de medios: dentro de la banda de héroe (FX-17: el vídeo
-     destacado junto al texto, sin tiles sueltos a todo el ancho). */
+  /* Galería de medios (T8B/F-1): sección propia después del CTA de
+     cotización; rejilla de una columna en móvil y dos desde 768 px. */
+  .product-gallery {
+    padding-block: var(--space-6) var(--space-8);
+  }
+
+  .product-gallery-grid {
+    display: grid;
+    gap: var(--space-4);
+  }
+
+  @media (min-width: 768px) {
+    .product-gallery-grid {
+      grid-template-columns: repeat(auto-fill, minmax(280px, 360px));
+      /* N-2: start evita que la figure se estire a la pista y el vídeo
+         quede centrado dentro de una banda ancha (justify-items: center
+         del propio VideoSlot); queda alineado bajo el título "Galería". */
+      justify-items: start;
+    }
+  }
 
   /* Cotización sobre fondo claro: el botón primario nunca va sobre azul */
   .product-quote {

@@ -54,6 +54,17 @@ const crumbs = [
     </div>
   </nav>
 
+  <script>
+    const list = document.querySelector<HTMLElement>('.switcher-list');
+    const active = list?.querySelector<HTMLElement>('[aria-current="page"]');
+    if (list && active) {
+      const overflow = active.offsetLeft - list.offsetLeft + active.offsetWidth - list.clientWidth;
+      if (overflow > 0) {
+        list.scrollLeft = overflow;
+      }
+    }
+  </script>
+
   <section class="items-section" data-reveal>
     <div class="container">
       <h2 class="visually-hidden">Productos de {category.name}</h2>

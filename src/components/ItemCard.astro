@@ -135,15 +135,15 @@ const thumbImage =
   }
 
   .item-card--ficha:hover,
-  .item-card--ficha:focus-within {
+  .item-card--ficha:has(.item-link:focus-visible) {
     border-color: var(--color-sand-600);
   }
 
-  /* D2 (FIX1): anillo de foco a nivel de tarjeta cuando el enlace recibe
-     foco (navy-800 sobre crema/marfil, >= 3:1). El anillo propio del
-     enlace (regla global a:focus-visible) se conserva como respaldo en
-     navegadores sin :has(); ambos indicadores son válidos a la vez. */
-  .item-card--ficha:focus-within {
+  /* T8B (F-2): anillo solo con foco de teclado (:focus-visible del
+     enlace, leído con :has()); el clic de ratón ya no lo dibuja. El
+     anillo propio del enlace (regla global a:focus-visible) se
+     conserva como respaldo en navegadores sin :has(). */
+  .item-card--ficha:has(.item-link:focus-visible) {
     outline: 3px solid var(--color-navy-800);
     outline-offset: 2px;
   }
