@@ -1,6 +1,6 @@
 ---
 interface Props {
-  variant?: 'primary' | 'secondary' | 'ghost' | 'on-dark' | 'on-dark-outline';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'on-dark' | 'on-dark-outline' | 'link';
   href?: string;
   type?: 'button' | 'submit';
   external?: boolean;
@@ -86,6 +86,12 @@ const classes = ['btn', `btn-${variant}`].join(' ');
     .btn-on-dark-outline:hover {
       background: color-mix(in srgb, var(--color-ivory) 14%, transparent);
     }
+
+    /* T11b (ítem 4): en el enlace el hover solo engrosa el subrayado,
+       sin cambio de color (navy-800/crema 14.51:1 en reposo). */
+    .btn-link:hover {
+      text-decoration-thickness: 2px;
+    }
   }
 
   .btn-secondary {
@@ -112,5 +118,17 @@ const classes = ['btn', `btn-${variant}`].join(' ');
     background: transparent;
     border-color: var(--color-ivory);
     color: var(--color-ivory);
+  }
+
+  /* T11b (ítem 4): variante de enlace (fila compacta de pendientes);
+     fondo transparente y texto navy-800 subrayado sobre crema
+     (contraste >= 4.5:1, calculado en el informe LH-T11B). Conserva el
+     objetivo táctil de 44 px de `.btn` con un padding-inline menor. */
+  .btn-link {
+    padding-inline: var(--space-2);
+    background: transparent;
+    color: var(--color-navy-800);
+    text-decoration: underline;
+    text-underline-offset: 3px;
   }
 </style>

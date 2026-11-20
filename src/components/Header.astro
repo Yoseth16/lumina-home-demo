@@ -19,7 +19,7 @@ import { buildWhatsAppUrl, quoteMessage } from '../lib/whatsapp';
           <a href="/">Inicio</a>
         </li>
         <li class="has-submenu">
-          <a href="/catalogo/">Catálogo</a>
+          <a href="/catalogo/">Catálogo<svg class="nav-chevron" aria-hidden="true" focusable="false" width="12" height="12" viewBox="0 0 12 12"><path d="M2 4l4 4 4-4" fill="none" stroke="currentColor" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round" /></svg></a>
           <ul class="nav-sublist">
             {
               categories.map((category) => (
@@ -135,6 +135,12 @@ import { buildWhatsAppUrl, quoteMessage } from '../lib/whatsapp';
     list-style: none;
   }
 
+  /* T11b (ítem 11): chevrona del submenú, oculta en móvil (el submenú
+     va expandido y no aporta); visible solo en escritorio. */
+  .nav-chevron {
+    display: none;
+  }
+
   .header-cta {
     margin-top: var(--space-3);
   }
@@ -167,6 +173,9 @@ import { buildWhatsAppUrl, quoteMessage } from '../lib/whatsapp';
       top: 100%;
       left: 0;
       display: none;
+      /* T11b-FIX1 (D2): el desplegable se pinta sobre el héroe de la
+         portada (por debajo del FAB, 50, y del skip-link, 100). */
+      z-index: 20;
       min-width: 220px;
       padding: var(--space-3);
       background: var(--color-navy-800);
@@ -185,9 +194,28 @@ import { buildWhatsAppUrl, quoteMessage } from '../lib/whatsapp';
       display: grid;
     }
 
+    /* T11b (ítem 11): en escritorio la chevrona acompaña al texto del
+       enlace «Catálogo» y gira al abrirse el submenú (foco dentro y,
+       solo con puntero fino, hover), sin transición ni animación. */
+    .nav-chevron {
+      display: block;
+    }
+
+    .has-submenu > a {
+      gap: var(--space-1);
+    }
+
+    .has-submenu:focus-within .nav-chevron {
+      transform: rotate(180deg);
+    }
+
     @media (hover: hover) and (pointer: fine) {
       .has-submenu:hover .nav-sublist {
         display: grid;
+      }
+
+      .has-submenu:hover .nav-chevron {
+        transform: rotate(180deg);
       }
     }
 

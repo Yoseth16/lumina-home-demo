@@ -142,7 +142,12 @@ Incluido:
 - Tres páginas de categoría (polarizados, papel tapiz, persianas y
   cortinas).
 - Dos fichas de producto completas: Enrollable y Sheer Elegance.
-- Los demás ítems, como «Ficha en preparación».
+- Los demás ítems, listados en un grupo compacto «Más productos — ficha
+  en preparación» con enlace de cotización por ítem.
+- Botón flotante «Cotizar por WhatsApp» en todas las páginas, excepto
+  Contacto.
+- Sección «Cómo cotizar» en la portada, con tres pasos (copy
+  provisional).
 - Formulario de contacto con salida por WhatsApp.
 - Página 404.
 - Diseño responsive comprobado a 320, 360, 768 y 1280 px.
@@ -174,6 +179,18 @@ Pendiente del cliente, con su consecuencia:
   la ventana: confirmar que eso es aceptable.
 - La frase inicial de la galería de la portada es texto interno de la
   demostración; reemplazarla por el copy del cliente.
+- Los tres pasos de la sección «Cómo cotizar» de la portada (elegir el
+  producto, escribir por WhatsApp con las medidas, recibir la
+  cotización por el mismo chat) son copy provisional pendiente de la
+  confirmación del cliente.
+- Las definiciones de los productos («¿qué es un polarizado?», Sheer
+  Elegance, Dos en Uno) no están escritas: requieren copy del cliente.
+- En pantallas más estrechas de 600 px, la barra de demostración muestra
+  solo «Demostración · contenido provisional»; el aviso completo, que
+  menciona la vectorización provisional del logotipo, aparece a partir
+  de 600 px.
+- La galería de la portada tiene 3 huecos: 1 fotografía real y 2
+  provisionales.
 - Los chips de «Características» de las fichas son provisionales.
 - Si un producto recibe una segunda imagen, revisar sus atributos de
   carga: el héroe usa carga anticipada y prioridad alta (`loading`

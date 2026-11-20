@@ -18,6 +18,21 @@ interface Props {
 
 const { category } = Astro.props;
 
+/* T11b (ítem 4): separación de ítems para dos grupos visibles — las
+   fichas completas en la rejilla y los pendientes en la lista compacta
+   «Más productos — ficha en preparación», conservando el orden del
+   catálogo dentro de cada grupo. */
+const fichaItems = category.items.filter((item) => item.status === 'ficha');
+const pendingItems = category.items.filter((item) => item.status === 'pendiente');
+
+// Defensivo (única rama no ejercitada por la build real, G13): el grupo
+// de pendientes se dibuja siempre y hoy toda categoría tiene >= 1.
+if (pendingItems.length === 0) {
+  throw new Error(
+    `Categoría "${category.slug}": el grupo de pendientes necesita al menos un ítem pendiente.`,
+  );
+}
+
 const crumbs = [
   { label: 'Inicio', href: '/' },
   { label: 'Catálogo', href: '/catalogo/' },
@@ -67,9 +82,31 @@ const crumbs = [
 
   <section class="items-section" data-reveal>
     <div class="container">
-      <h2 class="visually-hidden">Productos de {category.name}</h2>
-      <div class="items-grid">
-        {category.items.map((item) => <ItemCard category={category} item={item} />)}
+      {
+        fichaItems.length > 0 && (
+          <>
+            <h2 class="visually-hidden">Productos de {category.name}</h2>
+            <div class="items-grid">
+              {fichaItems.map((item) => (
+                <ItemCard category={category} item={item} />
+              ))}
+            </div>
+          </>
+        )
+      }
+      <div class="pending-group">
+        <h2 class="pending-title">
+          {fichaItems.length > 0 ? 'Más productos — ficha en preparación' : 'Productos — ficha en preparación'}
+        </h2>
+        <ul class="pending-list" role="list">
+          {
+            pendingItems.map((item) => (
+              <li>
+                <ItemCard category={category} item={item} />
+              </li>
+            ))
+          }
+        </ul>
       </div>
     </div>
   </section>
@@ -172,6 +209,34 @@ const crumbs = [
   @media (min-width: 1000px) {
     .items-grid {
       grid-template-columns: repeat(3, 1fr);
+    }
+  }
+
+  /* T11b (ítem 4): grupo de pendientes en filas compactas; el margen
+     superior solo existe cuando sigue a la rejilla de fichas (selector
+     de hermanos, sin condicional de plantilla). */
+  .items-grid + .pending-group {
+    margin-top: var(--space-7);
+  }
+
+  .pending-title {
+    font-size: var(--fs-2);
+    color: var(--color-navy-800);
+    margin-bottom: var(--space-4);
+  }
+
+  /* role="list" compensa el workaround de semántica de lista de
+     Safari/VoiceOver con `list-style: none`. */
+  .pending-list {
+    display: grid;
+    gap: var(--space-3);
+    padding: 0;
+    list-style: none;
+  }
+
+  @media (min-width: 768px) {
+    .pending-list {
+      grid-template-columns: repeat(2, minmax(0, 1fr));
     }
   }
 </style>

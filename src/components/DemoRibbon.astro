@@ -2,13 +2,19 @@
 /**
  * Barra fina de aviso de demostración, presente en todas las páginas:
  * textos e imágenes provisionales y vectorización del logotipo
- * provisional, pendiente de aprobación del cliente.
+ * provisional, pendiente de aprobación del cliente. T11b (ítem 7): en
+ * pantallas estrechas (< 600 px) se muestra solo el texto corto
+ * «Demostración · contenido provisional»; el aviso completo aparece a
+ * partir de 600 px.
  */
 ---
 <aside class="demo-ribbon" aria-label="Aviso de demostración">
   <p class="container">
-    Demostración: textos e imágenes provisionales · Vectorización del logotipo
-    provisional, pendiente de aprobación del cliente
+    <span class="ribbon-short">Demostración · contenido provisional</span>
+    <span class="ribbon-full">
+      Demostración: textos e imágenes provisionales · Vectorización del logotipo
+      provisional, pendiente de aprobación del cliente
+    </span>
   </p>
 </aside>
 
@@ -24,5 +30,22 @@
     line-height: 1.4;
     text-align: center;
     color: var(--color-ink);
+  }
+
+  /* T11b (ítem 7): una sola línea en el móvil; `display: none` (no
+     visually-hidden) para que un único texto esté en el árbol de
+     accesibilidad a la vez. */
+  .ribbon-full {
+    display: none;
+  }
+
+  @media (min-width: 600px) {
+    .ribbon-short {
+      display: none;
+    }
+
+    .ribbon-full {
+      display: inline;
+    }
   }
 </style>

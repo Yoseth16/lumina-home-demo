@@ -59,10 +59,7 @@ const benefits = [
     <div class="container">
       <div class="presentacion-columns">
         <div class="presentacion-copy">
-          <SectionHeading eyebrow="Lumina Home · Cali, Colombia" title="Lumina Home" />
-          <p class="presentacion-lead">
-            Polarizados, papel tapiz y persianas y cortinas para tus espacios en Cali, Colombia.
-          </p>
+          <SectionHeading eyebrow="Cali, Colombia" title="Polarizados, papel tapiz y persianas y cortinas" />
         </div>
         <div class="presentacion-media">
           <MediaSlot
@@ -99,7 +96,7 @@ const benefits = [
           />
         </div>
         {
-          Array.from({ length: 5 }).map(() => (
+          Array.from({ length: 2 }).map(() => (
             <div class="gallery-item">
               <MediaSlot />
             </div>
@@ -116,6 +113,27 @@ const benefits = [
     </div>
   </section>
 
+  {/* T11b: copy provisional pending client confirmation */}
+  <section class="home-section como-cotizar" id="como-cotizar" data-reveal>
+    <div class="container">
+      <SectionHeading title="Cómo cotizar" />
+      <ol class="steps" role="list">
+        <li class="step">
+          <span class="step-number" aria-hidden="true">1</span>
+          <span class="step-text">Elige el producto en el catálogo.</span>
+        </li>
+        <li class="step">
+          <span class="step-number" aria-hidden="true">2</span>
+          <span class="step-text">Escríbenos por WhatsApp con el producto y las medidas de tu espacio.</span>
+        </li>
+        <li class="step">
+          <span class="step-number" aria-hidden="true">3</span>
+          <span class="step-text">Recibe tu cotización por el mismo chat.</span>
+        </li>
+      </ol>
+    </div>
+  </section>
+
   <section class="cotizar" id="cotizar" data-reveal>
     <div class="container">
       <SectionHeading title="Solicita tu cotización" lead="Cuéntanos qué espacio quieres transformar." />
@@ -127,7 +145,11 @@ const benefits = [
 </BaseLayout>
 
 <style>
-  /* Hero: foto de obra a sangre completa bajo un velo azul marino */
+  /* Hero: foto de obra a sangre completa bajo un velo azul marino que
+     deja pasar la luz: en escritorio (>= 768 px) cae de izquierda a
+     derecha, denso tras el texto y casi abierto hacia el borde derecho;
+     en móvil, ponderado hacia abajo para sostener el texto a todo el
+     ancho (T11b, ítem 3). */
   .hero {
     position: relative;
   }
@@ -146,15 +168,34 @@ const benefits = [
     aspect-ratio: auto;
   }
 
+  /* T11b (ítem 3): móvil — el texto ocupa todo el ancho, así que el velo
+     vertical oscurece sobre todo la parte baja, donde están el título y
+     la llamada. */
   .hero-overlay {
     position: absolute;
     inset: 0;
     background: linear-gradient(
       180deg,
-      color-mix(in srgb, var(--color-navy-900) 86%, transparent),
-      color-mix(in srgb, var(--color-navy-900) 72%, transparent) 55%,
-      color-mix(in srgb, var(--color-navy-900) 88%, transparent)
+      color-mix(in srgb, var(--color-navy-900) 72%, transparent) 0%,
+      color-mix(in srgb, var(--color-navy-900) 64%, transparent) 40%,
+      color-mix(in srgb, var(--color-navy-900) 86%, transparent) 100%
     );
+  }
+
+  /* T11b (ítem 3): escritorio — velo horizontal fuerte tras el titular
+     (hasta ~75 % del ancho) que se abre hacia el borde derecho (~25 %
+     final sin texto y visiblemente más claro que el velo uniforme
+     anterior). */
+  @media (min-width: 768px) {
+    .hero-overlay {
+      background: linear-gradient(
+        90deg,
+        color-mix(in srgb, var(--color-navy-900) 80%, transparent) 0%,
+        color-mix(in srgb, var(--color-navy-900) 72%, transparent) 40%,
+        color-mix(in srgb, var(--color-navy-900) 56%, transparent) 65%,
+        color-mix(in srgb, var(--color-navy-900) 12%, transparent) 100%
+      );
+    }
   }
 
   .hero-content {
@@ -197,12 +238,6 @@ const benefits = [
   .presentacion-columns {
     display: grid;
     gap: var(--space-5);
-  }
-
-  .presentacion-lead {
-    max-width: 60ch;
-    margin-top: calc(-1 * var(--space-3));
-    color: var(--color-muted);
   }
 
   .presentacion-media {
@@ -280,6 +315,53 @@ const benefits = [
 
     .gallery-item {
       flex: none;
+    }
+  }
+
+  /* T11b (ítem 8): «Cómo cotizar» — banda crema de separación con tres
+     pasos numerados; una columna en móvil y tres a partir de 900 px.
+     Copy provisional pendiente de confirmación del cliente. */
+  .como-cotizar {
+    padding-block: var(--space-7) var(--space-8);
+    background: var(--color-cream);
+    color: var(--color-ink);
+  }
+
+  .steps {
+    display: grid;
+    gap: var(--space-4);
+    padding: 0;
+    margin-bottom: 0;
+    list-style: none;
+  }
+
+  .step {
+    display: flex;
+    align-items: flex-start;
+    gap: var(--space-3);
+  }
+
+  .step-number {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    flex: 0 0 auto;
+    width: 32px;
+    height: 32px;
+    border-radius: 999px;
+    background: var(--color-navy-800);
+    color: var(--color-ivory);
+    font-weight: 600;
+  }
+
+  .step-text {
+    padding-block: var(--space-1);
+  }
+
+  @media (min-width: 900px) {
+    .steps {
+      grid-template-columns: repeat(3, minmax(0, 1fr));
+      gap: var(--space-5);
     }
   }
 
