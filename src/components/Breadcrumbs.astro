@@ -1,8 +1,14 @@
 ---
+import { withBase } from '../lib/paths';
+
 /**
  * Ruta de navegación (migas de pan). Todos los elementos menos el último
  * son enlaces; el último marca la página actual con `aria-current="page"`.
  * El separador visual queda oculto a lectores de pantalla.
+ *
+ * T14: los enlaces de las migas se resuelven aquí con la base del
+ * despliegue (`withBase`), sin ternarios en la plantilla: el elemento
+ * actual es un `span` y el resto un enlace prefijado.
  */
 interface BreadcrumbItem {
   label: string;
@@ -13,31 +19,45 @@ interface Props {
   items: BreadcrumbItem[];
 }
 
+type ResolvedCrumb = { label: string; isCurrent: true } | { label: string; isCurrent: false; href: string };
+
+function resolveCrumb(item: BreadcrumbItem, isCurrent: boolean): ResolvedCrumb {
+  if (isCurrent) {
+    return { label: item.label, isCurrent: true };
+  }
+  // Defensivo (única rama no ejercitada por la build real, G13): las
+  // migas no actuales siempre llegan con `href`.
+  if (item.href === undefined) {
+    throw new Error(`Breadcrumbs: la miga no actual «${item.label}» necesita href.`);
+  }
+  return { label: item.label, isCurrent: false, href: withBase(item.href) };
+}
+
 const { items } = Astro.props;
+
+const crumbs = items.map((item, index) => resolveCrumb(item, index === items.length - 1));
 ---
 
 <nav aria-label="Ruta de navegación">
   <ol class="breadcrumbs">
     {
-      items.map((item, index) => {
-        const isCurrent = index === items.length - 1;
-        return (
-          <li class="crumb">
-            {isCurrent ? (
-              <span class="crumb-label" aria-current="page">
-                {item.label}
-              </span>
-            ) : (
-              <>
-                <a class="crumb-link" href={item.href}>
-                  {item.label}
-                </a>
-                <span class="crumb-separator" aria-hidden="true">›</span>
-              </>
-            )}
-          </li>
-        );
-      })
+      crumbs.map((crumb) => (
+        <li class="crumb">
+          {crumb.isCurrent && (
+            <span class="crumb-label" aria-current="page">
+              {crumb.label}
+            </span>
+          )}
+          {!crumb.isCurrent && (
+            <>
+              <a class="crumb-link" href={crumb.href}>
+                {crumb.label}
+              </a>
+              <span class="crumb-separator" aria-hidden="true">›</span>
+            </>
+          )}
+        </li>
+      ))
     }
   </ol>
 </nav>

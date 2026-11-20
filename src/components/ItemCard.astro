@@ -6,6 +6,7 @@ import { mediaRegistry } from '../data/media';
 import { site } from '../data/site';
 import type { Category, Item } from '../data/schema';
 import { buildWhatsAppUrl, quoteMessage } from '../lib/whatsapp';
+import { publicAssetUrl, withBase } from '../lib/paths';
 
 /**
  * Tarjeta de producto del catálogo. T11b (ítem 4): los ítems `ficha`
@@ -29,7 +30,9 @@ interface Props {
 const { category, item } = Astro.props;
 
 const isFicha = item.status === 'ficha';
-const productHref = `/catalogo/${category.slug}/${item.slug}/`;
+/* T14: la ruta del producto lleva la base del despliegue (GitHub Pages
+   en subdirectorio). */
+const productHref = withBase(`/catalogo/${category.slug}/${item.slug}/`);
 
 /* T11b (ítem 4): enlace de cotización de la fila compacta, calculado
    siempre (número y texto via helpers, igual que WhatsAppButton). */
@@ -43,11 +46,6 @@ const imageSources = import.meta.glob('/src/assets/**/*.{jpeg,jpg,png}', {
   eager: true,
   import: 'default',
 }) as Record<string, ImageMetadata>;
-
-/** URL pública derivada de la ruta `public/...` del registro (prefijo `/`). */
-function toPublicUrl(path: string): string {
-  return path.replace(/^public/, '');
-}
 
 let thumbImageSource: ImageMetadata | undefined;
 let thumbPosterSrc: string | undefined;
@@ -69,7 +67,7 @@ if (isFicha) {
   }
 
   if (entry.kind === 'video') {
-    thumbPosterSrc = toPublicUrl(rawPath);
+    thumbPosterSrc = publicAssetUrl(rawPath);
   } else {
     thumbImageSource = imageSources[`/${rawPath}`];
   }

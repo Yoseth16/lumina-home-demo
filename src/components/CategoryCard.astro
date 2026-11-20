@@ -2,6 +2,7 @@
 import { getImage } from 'astro:assets';
 import type { ImageMetadata } from 'astro';
 import { mediaRegistry } from '../data/media';
+import { withBase } from '../lib/paths';
 import type { Category } from '../data/schema';
 
 /**
@@ -63,7 +64,7 @@ const cardImage =
   {/* T13 (ítem 1): opciones reales derivadas de `catalog.ts` (5/2/11,
       siempre plural: el catálogo nunca tiene menos de 2 por categoría). */}
   <p class="category-count">{category.items.length} opciones</p>
-  <a class="category-link" href={`/catalogo/${category.slug}/`}>Ver {category.name}</a>
+  <a class="category-link" href={withBase(`/catalogo/${category.slug}/`)}>Ver {category.name}</a>
 </article>
 
 <style>

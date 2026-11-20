@@ -6,6 +6,7 @@ import VideoSlot from '../../../components/VideoSlot.astro';
 import WhatsAppButton from '../../../components/WhatsAppButton.astro';
 import { fichaItems } from '../../../data/catalog';
 import { mediaRegistry } from '../../../data/media';
+import { withBase } from '../../../lib/paths';
 import type { Category, Item } from '../../../data/schema';
 
 /**
@@ -116,7 +117,7 @@ const crumbs = [
               category={category.name}
               label="Cotizar por WhatsApp"
             />
-            <a class="back-link" href={`/catalogo/${category.slug}/`}>
+            <a class="back-link" href={withBase(`/catalogo/${category.slug}/`)}>
               Volver a {category.name}
             </a>
           </div>

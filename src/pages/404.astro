@@ -2,6 +2,7 @@
 import BaseLayout from '../layouts/BaseLayout.astro';
 import Button from '../components/Button.astro';
 import Logo from '../components/Logo.astro';
+import { withBase } from '../lib/paths';
 
 /**
  * Página 404: lockup de marca, mensaje breve y dos rutas de salida
@@ -16,8 +17,8 @@ import Logo from '../components/Logo.astro';
       <h1 class="not-found-title">Página no encontrada</h1>
       <p class="not-found-lead">La página que buscas no existe o cambió de lugar.</p>
       <div class="not-found-actions">
-        <Button href="/" variant="primary">Volver al inicio</Button>
-        <Button href="/catalogo/" variant="secondary">Ver el catálogo</Button>
+        <Button href={withBase('/')} variant="primary">Volver al inicio</Button>
+        <Button href={withBase('/catalogo/')} variant="secondary">Ver el catálogo</Button>
       </div>
     </div>
   </section>

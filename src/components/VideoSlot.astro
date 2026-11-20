@@ -1,5 +1,6 @@
 ---
 import { canRender, mediaRegistry } from '../data/media';
+import { publicAssetUrl } from '../lib/paths';
 
 /**
  * Ranura de vídeo: renderiza el vídeo del registro cuando la entrada
@@ -31,13 +32,8 @@ if (entry.kind !== 'video') {
 const placeholderClass =
   className === undefined ? 'video-placeholder' : `video-placeholder ${className}`;
 
-/** URL pública derivada de la ruta `public/...` del registro (prefijo `/`). */
-function toPublicUrl(path: string): string {
-  return path.replace(/^public/, '');
-}
-
-const videoSrc = entry.file !== undefined ? toPublicUrl(entry.file) : null;
-const posterSrc = entry.poster !== undefined ? toPublicUrl(entry.poster) : null;
+const videoSrc = entry.file !== undefined ? publicAssetUrl(entry.file) : null;
+const posterSrc = entry.poster !== undefined ? publicAssetUrl(entry.poster) : null;
 
 const renderAsset =
   canRender(entry, { publicDeploy: false }) === 'asset' && videoSrc !== null && posterSrc !== null;

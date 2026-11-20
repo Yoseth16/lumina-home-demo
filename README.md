@@ -105,6 +105,25 @@ PUBLIC_WHATSAPP_NUMBER= pnpm build
 - `_cliente/` es la carpeta local, ignorada por git, donde se dejan los
   archivos que envía el cliente antes de decidir su uso.
 
+## Despliegue en GitHub Pages
+
+El flujo de trabajo `.github/workflows/deploy-pages.yml` compila y publica
+la demo en GitHub Pages en cada `push` a `master` (o manualmente con
+`workflow_dispatch`). Variables que usa la build de Pages:
+
+- `PUBLIC_BASE_PATH`: subruta del despliegue. Por defecto `/` en local;
+  el flujo la fija en `/lumina-home-demo/` (debe coincidir con el nombre
+  del repositorio para el subdirectorio de `github.io`).
+- `PUBLIC_SITE_URL`: sitio confirmado para URLs absolutas (canonical y
+  Open Graph); el flujo usa `https://<propietario>.github.io`.
+- `PUBLIC_WHATSAPP_NUMBER`: variable de repositorio opcional en GitHub
+  (*Settings → Secrets and variables → Actions → Variables*). Sin ella,
+  los enlaces de cotización quedan sin destinatario.
+
+El sitio sigue siendo `noindex` y nada se publica de forma automática
+desde este repositorio: la publicación la realiza el propietario
+(`git push` / `af-publish --yes`).
+
 ## Calidad y comprobaciones
 
 Ejecute una tras otra:

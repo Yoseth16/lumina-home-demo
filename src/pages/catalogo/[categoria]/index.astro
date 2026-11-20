@@ -3,6 +3,7 @@ import BaseLayout from '../../../layouts/BaseLayout.astro';
 import Breadcrumbs from '../../../components/Breadcrumbs.astro';
 import ItemCard from '../../../components/ItemCard.astro';
 import { categories } from '../../../data/catalog';
+import { withBase } from '../../../lib/paths';
 import type { Category } from '../../../data/schema';
 
 export function getStaticPaths() {
@@ -57,7 +58,7 @@ const crumbs = [
             <li>
               <a
                 class="switcher-link"
-                href={`/catalogo/${cat.slug}/`}
+                href={withBase(`/catalogo/${cat.slug}/`)}
                 aria-current={cat.slug === category.slug ? 'page' : undefined}
               >
                 {cat.shortName}

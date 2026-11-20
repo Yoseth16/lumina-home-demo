@@ -7,6 +7,7 @@ import MediaSlot from '../components/MediaSlot.astro';
 import SectionHeading from '../components/SectionHeading.astro';
 import WhatsAppButton from '../components/WhatsAppButton.astro';
 import { categories } from '../data/catalog';
+import { withBase } from '../lib/paths';
 
 const benefits = [
   {
@@ -49,7 +50,7 @@ const benefits = [
         Disfruta de tus espacios con la iluminación que deseas y un diseño que combina con tu hogar.
       </p>
       <div class="hero-actions">
-        <Button variant="on-dark-outline" href="/catalogo/">Ver catálogo</Button>
+        <Button variant="on-dark-outline" href={withBase('/catalogo/')}>Ver catálogo</Button>
         <WhatsAppButton variant="on-dark" context=" desde la portada" />
       </div>
     </div>
