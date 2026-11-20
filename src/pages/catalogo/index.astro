@@ -14,6 +14,7 @@ import { categories } from '../../data/catalog';
       <Breadcrumbs items={[{ label: 'Inicio', href: '/' }, { label: 'Catálogo' }]} />
       <h1 class="catalogo-title">Catálogo</h1>
       <p class="catalogo-lead">Elige una categoría para ver los productos.</p>
+      <h2 class="visually-hidden">Categorías del catálogo</h2>
       <div class="category-grid">
         {categories.map((category) => <CategoryCard category={category} />)}
       </div>

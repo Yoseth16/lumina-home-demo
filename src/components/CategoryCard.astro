@@ -1,9 +1,17 @@
 ---
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { mediaRegistry } from '../data/media';
 import type { Category } from '../data/schema';
 
 /**
  * Tarjeta de categoría del catálogo: nombre, etiqueta y enlace a la
- * sección correspondiente. Sin descripciones inventadas ni imágenes.
+ * sección correspondiente. Sin descripciones inventadas.
+ *
+ * FX-14: cuando la categoría tiene un ítem `ficha` con medios, la tarjeta
+ * reutiliza su primer medio del registro como imagen decorativa (se
+ * deriva de `catalog.ts`/`media.ts`; nada se fija aquí y ninguna otra
+ * categoría recibe imagen).
  */
 interface Props {
   category: Category;
@@ -11,9 +19,45 @@ interface Props {
 }
 
 const { category, reveal = false } = Astro.props;
+
+/** Imágenes del proyecto indexadas por la ruta `file` del registro (prefijo `/`). */
+const imageSources = import.meta.glob('/src/assets/**/*.{jpeg,jpg,png}', {
+  eager: true,
+  import: 'default',
+}) as Record<string, ImageMetadata>;
+
+const firstFichaMediaId = category.items.find((candidate) => candidate.status === 'ficha')?.media?.[0];
+const entry =
+  firstFichaMediaId === undefined
+    ? undefined
+    : mediaRegistry.find((candidate) => candidate.id === firstFichaMediaId);
+const cardImageSource = entry === undefined ? undefined : imageSources[`/${entry.file}`];
+
+/* Imagen optimizada con el mecanismo de imágenes del proyecto
+   (`getImage`, la misma API sobre la que se construye `Image`): el
+   `<img>` final se emite aquí con `alt=""` literal (decorativa). */
+const cardImageSizes = '(min-width: 900px) 350px, calc(100vw - 32px)';
+const cardImage =
+  cardImageSource !== undefined
+    ? await getImage({ src: cardImageSource, widths: [360, 720], sizes: cardImageSizes, alt: '' })
+    : undefined;
 ---
 
 <article class="category-card" data-reveal={reveal ? '' : undefined}>
+  {
+    cardImage !== undefined && (
+      <img
+        class="category-media"
+        src={cardImage.src}
+        srcset={cardImage.srcSet.attribute}
+        sizes={cardImageSizes}
+        alt=""
+        aria-hidden="true"
+        loading="lazy"
+        decoding="async"
+      />
+    )
+  }
   <h3 class="category-name">{category.name}</h3>
   <p class="category-tagline">{category.tagline}</p>
   <a class="category-link" href={`/catalogo/${category.slug}/`}>Ver {category.name}</a>
@@ -28,6 +72,13 @@ const { category, reveal = false } = Astro.props;
     border: 1px solid var(--color-line);
     border-radius: var(--radius-md);
     background: var(--color-cream);
+  }
+
+  .category-media {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-md);
   }
 
   .category-name {

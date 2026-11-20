@@ -1,6 +1,6 @@
 ---
 interface Props {
-  variant?: 'primary' | 'secondary' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'on-dark' | 'on-dark-outline';
   href?: string;
   type?: 'button' | 'submit';
   external?: boolean;
@@ -71,5 +71,28 @@ const classes = ['btn', `btn-${variant}`].join(' ');
 
   .btn-ghost:hover {
     background: var(--color-cream);
+  }
+
+  /* FX-01: sobre fondos azul marino (navy-900) el relleno azul marino no
+     se lee como botón. `on-dark` = relleno marfil con texto azul marino;
+     `on-dark-outline` = contorno marfil. Contraste texto/fondo >= 4.5:1
+     en reposo y en hover (marfil/navy 16.35:1, navy/crema 14.51:1). */
+  .btn-on-dark {
+    background: var(--color-ivory);
+    color: var(--color-navy-900);
+  }
+
+  .btn-on-dark:hover {
+    background: var(--color-cream);
+  }
+
+  .btn-on-dark-outline {
+    background: transparent;
+    border-color: var(--color-ivory);
+    color: var(--color-ivory);
+  }
+
+  .btn-on-dark-outline:hover {
+    background: color-mix(in srgb, var(--color-ivory) 14%, transparent);
   }
 </style>

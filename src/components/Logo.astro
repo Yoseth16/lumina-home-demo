@@ -31,14 +31,27 @@ const { variant = 'header' } = Astro.props;
     gap: var(--space-3);
   }
 
-  /* Tamaño por altura CSS; ancho automático según el viewBox. */
-  .logo :global(svg) {
-    height: 2.75rem;
+  /* Tamaño por altura CSS; ancho automático según el viewBox.
+     FX-02: el wordmark a 1.375rem dejaba "HOME" ilegible; nueva escala
+     sin tocar los SVG (solo CSS): marca 3rem / wordmark 2.25rem desde
+     768px, 2.5rem / 1.5rem por debajo, siempre en disposición horizontal. */
+  .logo-header :global(svg) {
+    height: 2.5rem;
     width: auto;
   }
 
   .logo-header :global(svg + svg) {
-    height: 1.375rem;
+    height: 1.5rem;
+  }
+
+  @media (min-width: 768px) {
+    .logo-header :global(svg) {
+      height: 3rem;
+    }
+
+    .logo-header :global(svg + svg) {
+      height: 2.25rem;
+    }
   }
 
   .logo-lockup :global(svg) {

@@ -6,15 +6,22 @@ import { buildWhatsAppUrl, quoteMessage } from '../lib/whatsapp';
 /**
  * Botón de cotización por WhatsApp: el número nunca vive en el código,
  * llega desde `site.whatsappNumber` a través de los helpers.
+ *
+ * Nombre accesible (FX-10): con `item` se añade un sufijo oculto al
+ * visible (`Cotizar <ítem>`), de modo que cada enlace de cotización
+ * tiene un nombre único por página; con `context` se distingue entre
+ * enlaces sin ítem que comparten etiqueta visible.
  */
 interface Props {
   label?: string;
-  variant?: 'primary' | 'secondary' | 'ghost';
+  variant?: 'primary' | 'secondary' | 'ghost' | 'on-dark' | 'on-dark-outline';
   item?: string;
   category?: string;
+  context?: string;
 }
 
-const { label = 'Cotizar por WhatsApp', variant = 'primary', item, category } = Astro.props;
+const { label = 'Cotizar por WhatsApp', variant = 'primary', item, category, context } =
+  Astro.props;
 
 const href = buildWhatsAppUrl({
   number: site.whatsappNumber,
@@ -25,4 +32,8 @@ const href = buildWhatsAppUrl({
 });
 ---
 
-<Button variant={variant} href={href} external>{label}</Button>
+<Button variant={variant} href={href} external>
+  {label}
+  {item !== undefined && <span class="visually-hidden"> {item}</span>}
+  {context !== undefined && <span class="visually-hidden"> {context}</span>}
+</Button>

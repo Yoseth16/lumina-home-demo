@@ -52,8 +52,35 @@ const crumbs = [
   <section class="product-hero">
     <div class="container">
       <Breadcrumbs items={crumbs} />
-      <h1 class="product-title">{item.name}</h1>
-      <p class="product-lead">{description}</p>
+      <div class="product-hero-columns">
+        <div class="product-hero-text">
+          <h1 class="product-title">{item.name}</h1>
+          <p class="product-lead">{description}</p>
+        </div>
+        {
+          mediaIds.length > 0 && (
+            <div class="product-media">
+              {mediaIds.map((id, index) => (
+                <div class={index === 0 ? 'product-hero-media' : 'product-rest-media'}>
+                  {index === 1 && <h2 class="gallery-title">Galería</h2>}
+                  {kindById.get(id) === 'video' ? (
+                    <VideoSlot id={id} />
+                  ) : (
+                    /* Brazo de imagen = medio del héroe (la única imagen del catálogo está en el índice 0): eager/high sin condicional. */
+                    <MediaSlot
+                      id={id}
+                      widths={[480, 800, 1200]}
+                      sizes="(min-width: 768px) 40vw, 100vw"
+                      loading="eager"
+                      fetchpriority="high"
+                    />
+                  )}
+                </div>
+              ))}
+            </div>
+          )
+        }
+      </div>
     </div>
   </section>
 
@@ -72,36 +99,13 @@ const crumbs = [
     )
   }
 
-  {
-    mediaIds.length > 0 && (
-      <section class="product-gallery" data-reveal>
-        <div class="container">
-          <h2 class="gallery-title">Galería</h2>
-          <div class="gallery-grid">
-            {mediaIds.map((id) =>
-              kindById.get(id) === 'video' ? (
-                <VideoSlot id={id} />
-              ) : (
-                <MediaSlot
-                  id={id}
-                  widths={[480, 800, 1200]}
-                  sizes="(min-width: 900px) 50vw, 100vw"
-                />
-              ),
-            )}
-          </div>
-        </div>
-      </section>
-    )
-  }
-
   <section class="product-quote" data-reveal>
     <div class="container">
       <div class="quote-actions">
         <WhatsAppButton
           item={item.name}
           category={category.name}
-          label={`Cotizar ${item.name} por WhatsApp`}
+          label="Cotizar por WhatsApp"
         />
         <a class="back-link" href={`/catalogo/${category.slug}/`}>
           Volver a {category.name}
@@ -112,15 +116,67 @@ const crumbs = [
 </BaseLayout>
 
 <style>
-  /* Banda de producto: azul marino con texto marfil, sin CTAs */
+  /* Banda de producto: azul marino con texto marfil, sin CTAs.
+     FX-15: el primer medio acompaña al texto (apilado en móvil justo
+     después del título/entrada; dos columnas desde 768 px). El resto
+     de medios sigue en la misma columna bajo el título "Galería". */
   .product-hero {
-    padding-block: var(--space-5) var(--space-7);
+    padding-block: var(--space-6) var(--space-7);
     background: var(--color-navy-900);
     color: var(--color-ivory);
   }
 
   .product-hero :global(a:focus-visible) {
     outline-color: var(--color-ivory);
+  }
+
+  .product-hero-columns {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .product-media {
+    display: grid;
+    gap: var(--space-5);
+  }
+
+  .product-hero-media {
+    margin-top: var(--space-2);
+  }
+
+  .gallery-title {
+    margin-bottom: var(--space-3);
+    color: var(--color-ivory);
+  }
+
+  .product-media :global(.video-slot figcaption) {
+    color: var(--color-cream);
+  }
+
+  .product-media :global(img) {
+    /* D1 (FIX1): los atributos width/height emitidos por Astro junto con
+       el max-width global dejaban la altura clavada en 1600 px mientras
+       el ancho se reducía (imagen aplastada). height:auto restaura la
+       proporción natural; el tope de altura recorta con cover (sin
+       deformar) y mantiene el primer medio dentro del primer viewport
+       en móvil. */
+    width: 100%;
+    height: auto;
+    max-height: min(70vh, 640px);
+    object-fit: cover;
+    border-radius: var(--radius-md);
+  }
+
+  @media (min-width: 768px) {
+    .product-hero-columns {
+      grid-template-columns: minmax(0, 7fr) minmax(0, 5fr);
+      column-gap: var(--space-6);
+      align-items: start;
+    }
+
+    .product-hero-media {
+      margin-top: 0;
+    }
   }
 
   .product-title {
@@ -165,26 +221,8 @@ const crumbs = [
     font-weight: 600;
   }
 
-  /* Galería: apilada en móvil, dos columnas en escritorio */
-  .product-gallery {
-    padding-block: var(--space-6);
-  }
-
-  .gallery-title {
-    margin-bottom: var(--space-4);
-  }
-
-  .gallery-grid {
-    display: grid;
-    gap: var(--space-4);
-  }
-
-  @media (min-width: 900px) {
-    .gallery-grid {
-      grid-template-columns: repeat(2, 1fr);
-      align-items: start;
-    }
-  }
+  /* Galería de medios: dentro de la banda de héroe (FX-17: el vídeo
+     destacado junto al texto, sin tiles sueltos a todo el ancho). */
 
   /* Cotización sobre fondo claro: el botón primario nunca va sobre azul */
   .product-quote {

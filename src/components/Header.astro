@@ -36,11 +36,11 @@ import { buildWhatsAppUrl, quoteMessage } from '../lib/whatsapp';
       </ul>
       <div class="header-cta">
         <Button
-          variant="primary"
+          variant="on-dark"
           href={buildWhatsAppUrl({ number: site.whatsappNumber, message: quoteMessage({}) })}
           external
         >
-          Cotizar por WhatsApp
+          Cotizar por WhatsApp<span class="visually-hidden"> desde el encabezado</span>
         </Button>
       </div>
     </nav>

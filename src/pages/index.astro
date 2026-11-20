@@ -49,24 +49,28 @@ const benefits = [
         Disfruta de tus espacios con la iluminación que deseas y un diseño que combina con tu hogar.
       </p>
       <div class="hero-actions">
-        <Button variant="primary" href="/catalogo/">Ver catálogo</Button>
-        <WhatsAppButton />
+        <Button variant="on-dark-outline" href="/catalogo/">Ver catálogo</Button>
+        <WhatsAppButton variant="on-dark" context=" desde la portada" />
       </div>
     </div>
   </section>
 
   <section class="home-section" id="presentacion" data-reveal>
     <div class="container">
-      <SectionHeading eyebrow="Lumina Home · Cali, Colombia" title="Lumina Home" />
-      <p class="presentacion-lead">
-        Polarizados, papel tapiz y persianas y cortinas para tus espacios en Cali, Colombia.
-      </p>
-      <div class="presentacion-media">
-        <MediaSlot
-          id="brand-mockup"
-          widths={[480, 800, 1200]}
-          sizes="(min-width: 900px) 55vw, 100vw"
-        />
+      <div class="presentacion-columns">
+        <div class="presentacion-copy">
+          <SectionHeading eyebrow="Lumina Home · Cali, Colombia" title="Lumina Home" />
+          <p class="presentacion-lead">
+            Polarizados, papel tapiz y persianas y cortinas para tus espacios en Cali, Colombia.
+          </p>
+        </div>
+        <div class="presentacion-media">
+          <MediaSlot
+            id="brand-mockup"
+            widths={[480, 800, 1200]}
+            sizes="(min-width: 900px) 55vw, 100vw"
+          />
+        </div>
       </div>
     </div>
   </section>
@@ -116,7 +120,7 @@ const benefits = [
     <div class="container">
       <SectionHeading title="Solicita tu cotización" lead="Cuéntanos qué espacio quieres transformar." />
       <div class="cotizar-actions">
-        <WhatsAppButton variant="primary" />
+        <WhatsAppButton variant="on-dark" context=" desde la banda de cotización" />
       </div>
     </div>
   </section>
@@ -148,7 +152,7 @@ const benefits = [
     background: linear-gradient(
       180deg,
       color-mix(in srgb, var(--color-navy-900) 86%, transparent),
-      color-mix(in srgb, var(--color-navy-900) 62%, transparent) 55%,
+      color-mix(in srgb, var(--color-navy-900) 72%, transparent) 55%,
       color-mix(in srgb, var(--color-navy-900) 88%, transparent)
     );
   }
@@ -188,7 +192,13 @@ const benefits = [
     padding-block: var(--space-7) var(--space-8);
   }
 
-  /* Presentación: la imagen de marca se muestra sin recorte */
+  /* Presentación: dos columnas desde 900 px (FX-07): texto a la
+     izquierda y mockup de marca a la derecha a tamaño de columna. */
+  .presentacion-columns {
+    display: grid;
+    gap: var(--space-5);
+  }
+
   .presentacion-lead {
     max-width: 60ch;
     margin-top: calc(-1 * var(--space-3));
@@ -208,6 +218,19 @@ const benefits = [
     width: 100%;
     height: auto;
     object-fit: contain;
+  }
+
+  @media (min-width: 900px) {
+    .presentacion-columns {
+      grid-template-columns: minmax(0, 5fr) minmax(0, 7fr);
+      gap: var(--space-6);
+      align-items: center;
+    }
+
+    .presentacion-media {
+      max-width: none;
+      margin-top: 0;
+    }
   }
 
   /* Categorías: una columna en móvil, tres a partir de 900 px */

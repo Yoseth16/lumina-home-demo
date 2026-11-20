@@ -1,4 +1,7 @@
 ---
+import { getImage } from 'astro:assets';
+import type { ImageMetadata } from 'astro';
+import { mediaRegistry } from '../data/media';
 import type { Category, Item } from '../data/schema';
 import WhatsAppButton from './WhatsAppButton.astro';
 
@@ -6,7 +9,13 @@ import WhatsAppButton from './WhatsAppButton.astro';
  * Tarjeta de producto del catálogo. Los ítems `ficha` enlazan a su página
  * de producto (se construye en T6); los `pendiente` muestran el aviso de
  * ficha en preparación y un botón de cotización. Sin imágenes ni texto
- * inventado: el contenido siempre proviene de `catalog.ts`.
+ * inventado: el contenido siempre proviene de `catalog.ts` y `media.ts`.
+ *
+ * FX-11: las tarjetas `ficha` derivan su miniatura del PRIMER id de
+ * `item.media` a través del registro (imagen -> mecanismo de imágenes del
+ * proyecto; vídeo -> su póster) y toda la tarjeta es un único enlace cuyo
+ * texto incluye el nombre; sin enlaces anidados. Los `pendiente` no
+ * llevan imagen ni enlace a ficha.
  */
 interface Props {
   category: Category;
@@ -17,28 +26,96 @@ const { category, item } = Astro.props;
 
 const isFicha = item.status === 'ficha';
 const productHref = `/catalogo/${category.slug}/${item.slug}/`;
+
+/** Imágenes del proyecto indexadas por la ruta `file` del registro (prefijo `/`). */
+const imageSources = import.meta.glob('/src/assets/**/*.{jpeg,jpg,png}', {
+  eager: true,
+  import: 'default',
+}) as Record<string, ImageMetadata>;
+
+/** URL pública derivada de la ruta `public/...` del registro (prefijo `/`). */
+function toPublicUrl(path: string): string {
+  return path.replace(/^public/, '');
+}
+
+let thumbImageSource: ImageMetadata | undefined;
+let thumbPosterSrc: string | undefined;
+
+if (isFicha) {
+  const firstMediaId = item.media?.[0];
+  const entry =
+    firstMediaId === undefined
+      ? undefined
+      : mediaRegistry.find((candidate) => candidate.id === firstMediaId);
+  const rawPath = entry === undefined ? undefined : entry.kind === 'video' ? entry.poster : entry.file;
+
+  // Defensivo (única rama no ejercitada por la build real): un id de medio
+  // no registrado, o sin archivo/póster, interrumpe el build como VideoSlot.
+  if (entry === undefined || rawPath === undefined) {
+    throw new Error(
+      `ItemCard: miniatura no disponible para el ítem de ficha "${item.slug}" (medio: ${firstMediaId ?? 'sin medios'}).`,
+    );
+  }
+
+  if (entry.kind === 'video') {
+    thumbPosterSrc = toPublicUrl(rawPath);
+  } else {
+    thumbImageSource = imageSources[`/${rawPath}`];
+  }
+}
+
+/* Miniatura optimizada con el mecanismo de imágenes del proyecto
+   (`getImage`, la misma API sobre la que se construye `Image`): el
+   `<img>` final se emite aquí con `alt=""` literal para que sea
+   decorativo (el nombre de la tarjeta es el texto del enlace). */
+const thumbImageSizes = '(min-width: 1000px) 350px, (min-width: 640px) 45vw, calc(100vw - 32px)';
+const thumbImage =
+  thumbImageSource !== undefined
+    ? await getImage({
+        src: thumbImageSource,
+        widths: [360, 720],
+        sizes: thumbImageSizes,
+        alt: '',
+      })
+    : undefined;
 ---
 
-<article class="item-card">
-  <h3 class="item-name">{item.name}</h3>
-  {
-    isFicha ? (
-      <>
-        {item.summary !== undefined && <p class="item-summary">{item.summary}</p>}
+{
+  isFicha ? (
+    <article class="item-card item-card--ficha">
+      {thumbImage !== undefined && (
+        <img
+          class="item-thumb"
+          src={thumbImage.src}
+          srcset={thumbImage.srcSet.attribute}
+          sizes={thumbImageSizes}
+          alt=""
+          aria-hidden="true"
+          loading="lazy"
+          decoding="async"
+        />
+      )}
+      {thumbPosterSrc !== undefined && (
+        <img class="item-thumb" src={thumbPosterSrc} alt="" aria-hidden="true" loading="lazy" />
+      )}
+      <h3 class="item-name">
         <a class="item-link" href={productHref}>
-          Ver ficha de {item.name}
+          {item.name}
+          <span class="item-link-hint" aria-hidden="true">Ver ficha</span>
         </a>
-      </>
-    ) : (
-      <>
-        <p class="item-badge">Ficha en preparación</p>
-        <div class="item-action">
-          <WhatsAppButton label="Cotizar" item={item.name} category={category.name} />
-        </div>
-      </>
-    )
-  }
-</article>
+      </h3>
+      {item.summary !== undefined && <p class="item-summary">{item.summary}</p>}
+    </article>
+  ) : (
+    <article class="item-card">
+      <h3 class="item-name">{item.name}</h3>
+      <p class="item-badge">Ficha en preparación</p>
+      <div class="item-action">
+        <WhatsAppButton label="Cotizar" item={item.name} category={category.name} />
+      </div>
+    </article>
+  )
+}
 
 <style>
   .item-card {
@@ -51,6 +128,33 @@ const productHref = `/catalogo/${category.slug}/${item.slug}/`;
     background: var(--color-cream);
   }
 
+  /* FX-11: el único enlace de la tarjeta se estira sobre toda la
+     superficie (pseudo-elemento) manteniendo el texto del nombre. */
+  .item-card--ficha {
+    position: relative;
+  }
+
+  .item-card--ficha:hover,
+  .item-card--ficha:focus-within {
+    border-color: var(--color-sand-600);
+  }
+
+  /* D2 (FIX1): anillo de foco a nivel de tarjeta cuando el enlace recibe
+     foco (navy-800 sobre crema/marfil, >= 3:1). El anillo propio del
+     enlace (regla global a:focus-visible) se conserva como respaldo en
+     navegadores sin :has(); ambos indicadores son válidos a la vez. */
+  .item-card--ficha:focus-within {
+    outline: 3px solid var(--color-navy-800);
+    outline-offset: 2px;
+  }
+
+  .item-thumb {
+    width: 100%;
+    aspect-ratio: 4 / 3;
+    object-fit: cover;
+    border-radius: var(--radius-md);
+  }
+
   .item-name {
     color: var(--color-navy-800);
   }
@@ -59,30 +163,43 @@ const productHref = `/catalogo/${category.slug}/${item.slug}/`;
     color: var(--color-muted);
   }
 
+  /* FX-12: aviso en píldora pequeña, sentence case (sin mayúsculas
+     forzadas ni caja a todo el ancho); el texto se mantiene literal. */
   .item-badge {
+    justify-self: start;
     align-self: start;
-    padding: var(--space-1) var(--space-2);
+    padding: var(--space-1) var(--space-3);
     border: 1px solid var(--color-line);
-    border-radius: var(--radius-sm);
+    border-radius: 999px;
     font-size: var(--fs-0);
     font-weight: 600;
-    letter-spacing: 0.08em;
-    text-transform: uppercase;
     color: var(--color-muted);
   }
 
   .item-link {
-    justify-self: start;
     display: inline-flex;
     align-items: center;
+    gap: var(--space-2);
     min-height: 44px;
     font-weight: 600;
     color: var(--color-navy-800);
     text-decoration: none;
   }
 
+  .item-link::after {
+    content: '';
+    position: absolute;
+    inset: 0;
+  }
+
   .item-link:hover {
     text-decoration: underline;
+  }
+
+  .item-link-hint {
+    font-size: var(--fs-0);
+    font-weight: 600;
+    color: var(--color-muted);
   }
 
   .item-action {

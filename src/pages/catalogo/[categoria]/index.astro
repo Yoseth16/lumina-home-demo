@@ -56,6 +56,7 @@ const crumbs = [
 
   <section class="items-section" data-reveal>
     <div class="container">
+      <h2 class="visually-hidden">Productos de {category.name}</h2>
       <div class="items-grid">
         {category.items.map((item) => <ItemCard category={category} item={item} />)}
       </div>
@@ -66,7 +67,7 @@ const crumbs = [
 <style>
   /* Banda de categoría: azul marino con texto marfil, sin CTAs ni imágenes */
   .category-hero {
-    padding-block: var(--space-5) var(--space-7);
+    padding-block: var(--space-6) var(--space-7);
     background: var(--color-navy-900);
     color: var(--color-ivory);
   }
@@ -85,7 +86,9 @@ const crumbs = [
     color: var(--color-cream);
   }
 
-  /* Conmutador de categorías */
+  /* Conmutador de categorías: FX-13 — una sola fila con desplazamiento
+     horizontal y scroll-snap en móvil (sin salto de línea ni scroll de
+     página), alineada al borde del contenedor en escritorio. */
   .category-switcher {
     border-bottom: 1px solid var(--color-line);
     background: var(--color-cream);
@@ -93,11 +96,23 @@ const crumbs = [
 
   .switcher-list {
     display: flex;
-    flex-wrap: wrap;
+    flex-wrap: nowrap;
     gap: var(--space-1);
-    padding-block: var(--space-1);
+    /* D3 (FIX1): el padding-inline UA (40px) desalineaba la primera
+       pestaña respecto al borde del contenedor/h1; a cero alinea la
+       caja de la pestaña con el borde. */
+    padding-inline: 0;
+    padding-block: var(--space-2);
     margin: 0;
     list-style: none;
+    overflow-x: auto;
+    scroll-snap-type: x proximity;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  .switcher-list li {
+    flex: 0 0 auto;
+    scroll-snap-align: start;
   }
 
   .switcher-link {
@@ -121,7 +136,9 @@ const crumbs = [
     box-shadow: inset 0 -2px 0 var(--color-navy-800);
   }
 
-  /* Productos: una columna en móvil, dos a partir de 640 px, tres a partir de 1000 px */
+  /* Productos: una columna en móvil, dos a partir de 640 px, tres a partir de 1000 px.
+     D5 (FIX1): align-items start evita que las tarjetas pendientes se
+     estiren a la altura de la tarjeta ficha con miniatura. */
   .items-section {
     padding-block: var(--space-6) var(--space-8);
   }
@@ -129,6 +146,7 @@ const crumbs = [
   .items-grid {
     display: grid;
     gap: var(--space-4);
+    align-items: start;
   }
 
   @media (min-width: 640px) {
